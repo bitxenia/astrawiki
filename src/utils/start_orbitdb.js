@@ -27,10 +27,9 @@ export const startOrbitDB = async () => {
   });
   console.log(`Database address: ${db.address}`);
 
-  await add_db_event_listeners(db);
-
   // TODO: Search and connect to other providers before providing? JP
 
+  // TODO: Maybe we do not need to wait for the db to be provided. JP
   await provide_db(helia, db);
 
   // return orbitdb and the db
@@ -54,10 +53,4 @@ const provide_db = async (helia, db) => {
       (endTime - startTime) / 1000
     } seconds`
   );
-};
-
-const add_db_event_listeners = async (db) => {
-  db.events.on("update", (entry) => {
-    console.log("Database updated:", entry);
-  });
 };
