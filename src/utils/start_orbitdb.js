@@ -3,12 +3,12 @@ import { FsDatastore } from "datastore-fs";
 import { createHelia } from "helia";
 import { createOrbitDB, IPFSAccessController } from "@orbitdb/core";
 import { CID } from "multiformats/cid";
-import { Libp2pOptions } from "./utils/libp2p.js";
+import { Libp2pOptions } from "./libp2p.js";
 
 // TODO: Add a way to opt to use a different database name. JP
 const DB_NAME = "bitxenia-wiki";
 
-export const initOrbitDB = async () => {
+export const startOrbitDB = async () => {
   const blockstore = new FsBlockstore("./data/ipfs/block-store");
   const datastore = new FsDatastore("./data/ipfs/data-store");
 
@@ -28,6 +28,8 @@ export const initOrbitDB = async () => {
   console.log(`Database address: ${db.address}`);
 
   await add_db_event_listeners(db);
+
+  // TODO: Search and connect to other providers before providing? JP
 
   await provide_db(helia, db);
 

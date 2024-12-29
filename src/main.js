@@ -1,7 +1,7 @@
-import { initOrbitDB } from "./init_orbitdb.js";
+import { startOrbitDB } from "./utils/start_orbitdb.js";
 
 const main = async () => {
-  const { orbitdb, helia, db } = await initOrbitDB();
+  const { orbitdb, helia, db } = await startOrbitDB();
 };
 
 main();

@@ -42,6 +42,9 @@ export const Libp2pOptions = {
   ],
   connectionEncrypters: [noise()],
   streamMuxers: [yamux()],
+  connectionGater: {
+    denyDialMultiaddr: () => false,
+  },
   peerDiscovery: [
     pubsubPeerDiscovery({
       interval: 1000,
