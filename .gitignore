@@ -10,5 +10,7 @@ yarn.lock
 tsconfig-doc-check.aegir.json
 
 data
-
 orbitdb
+*.log
+
+go.mod
