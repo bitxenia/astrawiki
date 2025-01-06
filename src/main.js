@@ -1,9 +1,11 @@
 import { startOrbitDb } from "./utils/start_orbitdb.js";
-import { startArticleDb } from "./utils/start_article_db.js";
+import { ArticleDB } from "./articledb.js";
 
 const main = async () => {
   const orbitdb = await startOrbitDb();
-  const articleDb = await startArticleDb(orbitdb);
+
+  const articledb = new ArticleDB(orbitdb);
+  await articledb.start();
 
   // Wait for connection and relay to be bind for the example purpose
   orbitdb.ipfs.libp2p.addEventListener("self:peer:update", (evt) => {

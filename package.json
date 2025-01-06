@@ -17,6 +17,7 @@
     "@libp2p/ping": "^2.0.14",
     "@libp2p/pubsub-peer-discovery": "^11.0.1",
     "@libp2p/tcp": "^10.0.14",
+    "@libp2p/tls": "^2.0.12",
     "@libp2p/upnp-nat": "^3.0.3",
     "@libp2p/webrtc": "^5.0.22",
     "@libp2p/websockets": "^9.1.0",
