@@ -23,7 +23,7 @@ import { webTransport } from "@libp2p/webtransport";
 export const Libp2pOptions = {
   // TODO: Port 4001 was manually opened, in my case upnp did not work. JP
   addresses: {
-    listen: ["/ip4/0.0.0.0/tcp/4001", "/p2p-circuit", "/webrtc"],
+    listen: ["/ip4/0.0.0.0/tcp/4001", "/webrtc", "/ip4/0.0.0.0/tcp/4002/ws"],
     // TODO: Add support for receiving tcp connections from the public ip.
     //       Optimally obtaining the public ip from the system. JP
     // appendAnnounce: [
@@ -31,7 +31,6 @@ export const Libp2pOptions = {
     // ],
   },
   transports: [
-    circuitRelayTransport(),
     tcp(),
     webRTC(),
     webRTCDirect(),

@@ -13,9 +13,7 @@ const main = async () => {
     console.log("Advertising with a relay addresses:");
     let multiaddrs = orbitdb.ipfs.libp2p.getMultiaddrs();
     for (const ma of multiaddrs) {
-      if (ma.toString().includes("p2p-circuit")) {
         console.log(`${ma}`);
-      }
     }
   });
 };
