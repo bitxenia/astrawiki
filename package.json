@@ -26,5 +26,8 @@
     "blockstore-fs": "^2.0.2",
     "datastore-fs": "^10.0.2",
     "helia": "^5.1.1"
+  },
+  "scripts": {
+    "start": "node src/main.js"
   }
 }

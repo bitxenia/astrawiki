@@ -10,10 +10,10 @@ const main = async () => {
   // Wait for connection and relay to be bind for the example purpose
   orbitdb.ipfs.libp2p.addEventListener("self:peer:update", (evt) => {
     // Updated self multiaddrs?
-    console.log("Advertising with a relay addresses:");
+    console.log("Advertising with addresses:");
     let multiaddrs = orbitdb.ipfs.libp2p.getMultiaddrs();
     for (const ma of multiaddrs) {
-        console.log(`${ma}`);
+      console.log(`${ma}`);
     }
   });
 };
