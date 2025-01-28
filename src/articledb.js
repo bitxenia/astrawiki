@@ -20,7 +20,7 @@ export class ArticleDB {
     // TODO: Search and connect to other providers before providing? JP
 
     // TODO: Maybe we do not need to wait for the db to be provided. JP
-    this.start_provide_db_service();
+    // this.start_provide_db_service();
 
     await this.set_up_db_events();
   }
@@ -41,8 +41,7 @@ export class ArticleDB {
         const endTime = performance.now();
 
         console.log(
-          `Database address ${cid} provided, took ${
-            (endTime - startTime) / 1000
+          `Database address ${cid} provided, took ${(endTime - startTime) / 1000
           } seconds`
         );
       } catch (error) {
@@ -54,10 +53,14 @@ export class ArticleDB {
   async set_up_db_events() {
     // TODO: We would want to use voyager for replicating the individual articles db.
     //       This is a temporary solution. JP
+    this.articledb.events.on("join", async (peerId, heads) => {
+      console.log(`${peerId} joined`)
+    })
+    this.articledb.events.on("leave", async (peerId) => {
+      console.log(`${peerId} left`)
+    })
     this.articledb.events.on("update", async (entry) => {
-      console.log("New article created received:", entry.payload.value);
-
-      let { articleName, articleAddress } = record.payload.value.split("::");
+      let [articleName, articleAddress] = entry.payload.value.split("::");
 
       console.log(
         `New article received: name: ${articleName}, addr: ${articleAddress}`,
@@ -65,8 +68,16 @@ export class ArticleDB {
       );
 
       // Replicate the article
-      const db = await orbitdb.open(articleAddress);
+
+      const db = await this.orbitdb.open(articleAddress);
+      db.events.on("update", async (peerId, heads) => {
+        console.log("Article updated by ", peerId);
+      })
+      db.events.on("close", () => {
+        console.log("Database closed")
+      })
       console.log(`Article replicated: ${db.address}`);
+      console.log(`Article content: ${await db.all()}`)
     });
   }
 }
