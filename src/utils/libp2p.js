@@ -1,4 +1,5 @@
 import { noise } from "@chainsafe/libp2p-noise";
+import { tls } from '@libp2p/tls'
 import { yamux } from "@chainsafe/libp2p-yamux";
 import { createDelegatedRoutingV1HttpApiClient } from "@helia/delegated-routing-v1-http-api-client";
 import { delegatedHTTPRoutingDefaults } from "@helia/routers";
@@ -19,6 +20,7 @@ import * as filters from "@libp2p/websockets/filters";
 import { pubsubPeerDiscovery } from "@libp2p/pubsub-peer-discovery";
 import { gossipsub } from "@chainsafe/libp2p-gossipsub";
 import { webTransport } from "@libp2p/webtransport";
+import { keychain } from '@libp2p/keychain'
 
 export const Libp2pOptions = {
   // TODO: Port 4001 was manually opened, in my case upnp did not work. JP
@@ -40,7 +42,10 @@ export const Libp2pOptions = {
       filter: filters.all,
     }),
   ],
-  connectionEncrypters: [noise()],
+  connectionEncrypters: [
+    noise(),
+    // tls()
+  ],
   streamMuxers: [yamux()],
   connectionGater: {
     denyDialMultiaddr: () => false,
@@ -95,5 +100,6 @@ export const Libp2pOptions = {
     identifyPush: identifyPush(),
     ping: ping(),
     upnp: uPnPNAT(),
+    keychain: keychain()
   },
 };
