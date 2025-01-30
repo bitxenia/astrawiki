@@ -1,11 +1,11 @@
 import { startOrbitDb } from "./utils/start_orbitdb.ts";
-import { ArticleDB } from "./articledb.ts";
+import { ArticleRepository } from "./articleRepository.ts";
 
 const main = async () => {
   const orbitdb = await startOrbitDb();
 
-  const articledb = new ArticleDB(orbitdb);
-  await articledb.start();
+  const articledb = new ArticleRepository(orbitdb);
+  await articledb.init();
 
   // Updated self multiaddrs?
   console.log("Advertising with addresses:");
