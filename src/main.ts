@@ -1,5 +1,5 @@
-import { startOrbitDb } from "./utils/start_orbitdb.js";
-import { ArticleDB } from "./articledb.js";
+import { startOrbitDb } from "./utils/start_orbitdb.ts";
+import { ArticleDB } from "./articledb.ts";
 
 const main = async () => {
   const orbitdb = await startOrbitDb();

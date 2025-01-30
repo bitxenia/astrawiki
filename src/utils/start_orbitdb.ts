@@ -2,7 +2,7 @@ import { FsBlockstore } from "blockstore-fs";
 import { FsDatastore } from "datastore-fs";
 import { createHelia } from "helia";
 import { createOrbitDB } from "@orbitdb/core";
-import { Libp2pOptions } from "./libp2p.js";
+import { Libp2pOptions } from "./libp2p.ts";
 import { createLibp2p } from "libp2p";
 import { loadOrCreateSelfKey } from "@libp2p/config";
 

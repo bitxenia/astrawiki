@@ -31,6 +31,6 @@
     "libp2p": "^2.5.0"
   },
   "scripts": {
-    "start": "node src/main.js"
+    "start": "node src/main.ts"
   }
 }
