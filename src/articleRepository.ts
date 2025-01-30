@@ -1,6 +1,6 @@
 import { type OrbitDB, IPFSAccessController } from "@orbitdb/core";
 import { CID } from "multiformats/cid";
-import { Article } from "./article";
+import { Article } from "./article.ts";
 
 // TODO: Add a way to opt to use a different database name. JP
 const ARTICLE_DB_NAME = "bitxenia-wiki";
@@ -34,7 +34,7 @@ export class ArticleRepository {
     // TODO: Maybe we do not need to wait for the db to be provided. JP
     // this.start_provide_db_service();
 
-    await this.set_up_db_events();
+    await this.setupDbEvents();
   }
 
   private async start_provide_db_service() {
@@ -63,7 +63,7 @@ export class ArticleRepository {
     }
   }
 
-  private async set_up_db_events() {
+  private async setupDbEvents() {
     this.articleRepositoryDB.events.on("update", async (entry) => {
       let [articleName, articleAddress] = entry.payload.value.split("::");
       console.log(
