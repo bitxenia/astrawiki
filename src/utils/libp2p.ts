@@ -1,5 +1,5 @@
 import { noise } from "@chainsafe/libp2p-noise";
-import { tls } from '@libp2p/tls'
+import { tls } from "@libp2p/tls";
 import { yamux } from "@chainsafe/libp2p-yamux";
 import { createDelegatedRoutingV1HttpApiClient } from "@helia/delegated-routing-v1-http-api-client";
 import { delegatedHTTPRoutingDefaults } from "@helia/routers";
@@ -20,7 +20,7 @@ import * as filters from "@libp2p/websockets/filters";
 import { pubsubPeerDiscovery } from "@libp2p/pubsub-peer-discovery";
 import { gossipsub } from "@chainsafe/libp2p-gossipsub";
 import { webTransport } from "@libp2p/webtransport";
-import { keychain } from '@libp2p/keychain'
+import { keychain } from "@libp2p/keychain";
 
 export const Libp2pOptions = {
   // TODO: Port 4001 was manually opened, in my case upnp did not work. JP
@@ -88,7 +88,7 @@ export const Libp2pOptions = {
     //  // https://github.com/libp2p/js-libp2p/tree/main/packages/kad-dht#example---connecting-to-the-ipfs-amino-dht
     //  protocol: "/ipfs/kad/1.0.0",
     //  peerInfoMapper: removePrivateAddressesMapper,
-    //  // clientMode: true,
+    //  clientMode: true,
     //  validators: {
     //    ipns: ipnsValidator,
     //  },
@@ -100,6 +100,6 @@ export const Libp2pOptions = {
     identifyPush: identifyPush(),
     ping: ping(),
     upnp: uPnPNAT(),
-    keychain: keychain()
+    keychain: keychain(),
   },
 };
