@@ -2,7 +2,10 @@
   "compilerOptions": {
     "outDir": "./built",
     "allowJs": true,
-    "target": "es5"
+    "target": "es5",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    
   },
   "include": ["./src/**/*"],
   "exclude": ["node_modules"]

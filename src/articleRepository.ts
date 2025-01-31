@@ -1,4 +1,10 @@
-import { type OrbitDB, IPFSAccessController } from "@orbitdb/core";
+import {
+  type OrbitDB,
+  ComposedStorage,
+  IPFSAccessController,
+  IPFSBlockStorage,
+  LRUStorage,
+} from "@orbitdb/core";
 import { CID } from "multiformats/cid";
 import { Article } from "./article.ts";
 
@@ -23,9 +29,16 @@ export class ArticleRepository {
     }
     this.initialized = true;
 
+    // We use the default storage, found in:
+    // https://github.com/orbitdb/orbitdb/blob/d290032ebf1692feee1985853b2c54d376bbfc82/src/access-controllers/ipfs.js#L56
+    const storage = await ComposedStorage(
+      await LRUStorage({ size: 1000 }),
+      await IPFSBlockStorage({ ipfs: this.orbitdb.ipfs, pin: true })
+    );
+
     // TODO: See if we need to search if the database exists first. JP
     this.articleRepositoryDB = await this.orbitdb.open(ARTICLE_DB_NAME, {
-      AccessController: IPFSAccessController({ write: ["*"] }),
+      AccessController: IPFSAccessController({ write: ["*"], storage }),
     });
     console.log(`Database address: ${this.articleRepositoryDB.address}`);
 
@@ -141,7 +154,7 @@ export class ArticleRepository {
   }
 
   private getDBAddressCID() {
-    const [_, cid]: string = this.articleRepositoryDB.address.split("/");
+    const [_, cid] = this.articleRepositoryDB.address.split("/");
     return CID.parse(cid);
   }
 }
