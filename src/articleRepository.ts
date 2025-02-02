@@ -154,7 +154,7 @@ export class ArticleRepository {
   }
 
   private getDBAddressCID() {
-    const [_, cid] = this.articleRepositoryDB.address.split("/");
+    const [_, __, cid] = this.articleRepositoryDB.address.split("/");
     return CID.parse(cid);
   }
 }
