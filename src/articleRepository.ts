@@ -52,7 +52,7 @@ export class ArticleRepository {
 
     this.startArticleReplicationService();
     // this.startConnectToProvidersService();
-    // this.startProvideDBService();
+    this.startProvideDBService();
   }
 
   private async startArticleReplicationService() {
