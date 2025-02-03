@@ -25,15 +25,16 @@ import { autoTLS } from "@libp2p/auto-tls";
 
 export const Libp2pOptions = {
   // TODO: Port 4001 was manually opened, in my case upnp did not work. JP
+  // Websocket ports need to differ from the tcp ports
   addresses: {
     listen: [
       "/ip4/0.0.0.0/tcp/4001",
-      "/ip4/0.0.0.0/tcp/4001/ws",
+      "/ip4/0.0.0.0/tcp/4002/ws",
       "/ip6/::/tcp/0/ws",
     ],
     // TODO: Add support for receiving tcp connections from the public ip.
     //       Optimally obtaining the public ip from the system. JP
-    // appendAnnounce: ["/ip4/<public_ip>/tcp/4001"],
+    // appendAnnounce: ["/ip4/<public_ip>/tcp/4001", "/ip4/<public_ip>/tcp/4002/ws"],
   },
   transports: [
     tcp(),
@@ -91,7 +92,9 @@ export const Libp2pOptions = {
       // https://github.com/libp2p/js-libp2p/tree/main/packages/kad-dht#example---connecting-to-the-ipfs-amino-dht
       protocol: "/ipfs/kad/1.0.0",
       peerInfoMapper: removePrivateAddressesMapper,
-      // clientMode: true,
+      // Server mode makes the node unable to receive connections, I think it is becuase it is always full.
+      // We do not need server mode anyway. JP
+      clientMode: true,
       validators: {
         ipns: ipnsValidator,
       },

@@ -19,6 +19,10 @@ export const startOrbitDb = async () => {
     ...Libp2pOptions,
   });
 
+  libp2p.addEventListener("certificate:provision", () => {
+    console.info("A TLS certificate was provisioned");
+  });
+
   const helia = await createHelia({
     datastore,
     blockstore,

@@ -108,7 +108,7 @@ export class ArticleRepository {
     // TODO: Find a better way to provide & reprovide the database. JP
     while (true) {
       try {
-        console.log("Providing database address");
+        console.log("Providing database address...");
         const startTime = performance.now();
         await this.orbitdb.ipfs.routing.provide(cid);
         const endTime = performance.now();
