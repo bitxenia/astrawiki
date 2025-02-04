@@ -20,6 +20,8 @@ export class Article {
     }
     this.initialized = true;
 
+    // TODO: Handle the case where the database doesn't exist.
+    //       This could be happening if the database existed but the peer was offline.
     this.articleDB = await this.orbitdb.open(this.articleAddress);
 
     await this.set_up_db_events();
