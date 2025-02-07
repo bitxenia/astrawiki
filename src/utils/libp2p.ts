@@ -24,17 +24,22 @@ import { keychain } from "@libp2p/keychain";
 import { autoTLS } from "@libp2p/auto-tls";
 
 export const Libp2pOptions = {
-  // TODO: Port 4001 was manually opened, in my case upnp did not work. JP
+  // TODO: Ports were manually opened, in my case upnp did not work. JP
   // Websocket ports need to differ from the tcp ports
   addresses: {
     listen: [
       "/ip4/0.0.0.0/tcp/4001",
       "/ip4/0.0.0.0/tcp/4002/ws",
-      "/ip6/::/tcp/0/ws",
+      "/ip4/0.0.0.0/tcp/4003/ws",
     ],
-    // TODO: Add support for receiving tcp connections from the public ip.
-    //       Optimally obtaining the public ip from the system. JP
-    // appendAnnounce: ["/ip4/<public_ip>/tcp/4001", "/ip4/<public_ip>/tcp/4002/ws"],
+    // Two websocket adresses are added for auto-tls to work.
+    // Per: https://github.com/libp2p/js-libp2p/issues/2929
+    // TODO: Append announce is only needed if upnp does not work. And ports are manually opened. JP
+    // appendAnnounce: [
+    //   "/ip4/<public_ip>/tcp/4001/",
+    //   "/ip4/<public_ip>/tcp/4002/ws",
+    //   "/ip4/<public_ip>/tcp/4003/tls/ws",
+    // ],
   },
   transports: [
     tcp(),
@@ -55,14 +60,14 @@ export const Libp2pOptions = {
     denyDialMultiaddr: () => false,
   },
   peerDiscovery: [
-    //pubsubPeerDiscovery({
-    //  interval: 1000,
-    //  topics: [
-    //    "bitxenia._peer-discovery._p2p._pubsub",
-    //    "_peer-discovery._p2p._pubsub",
-    //  ],
-    //  listenOnly: false,
-    //}),
+    pubsubPeerDiscovery({
+      interval: 1000,
+      topics: [
+        "bitxenia._peer-discovery._p2p._pubsub",
+        "_peer-discovery._p2p._pubsub",
+      ],
+      listenOnly: false,
+    }),
     bootstrap({
       // We use the default list of bootstrap nodes, found in the helia repo:
       // https://github.com/ipfs/helia/blob/main/packages/helia/src/utils/bootstrappers.ts
@@ -107,6 +112,9 @@ export const Libp2pOptions = {
     ping: ping(),
     upnp: uPnPNAT(),
     keychain: keychain(),
-    autoTLS: autoTLS(),
+    autoTLS: autoTLS({
+      // TODO: Ideally this should be removed, but for now to accelerate the creation of the address we set it to true.
+      autoConfirmAddress: true,
+    }),
   },
 };

@@ -9,6 +9,7 @@
     "@chainsafe/libp2p-yamux": "^7.0.1",
     "@constl/orbit-db-types": "^2.0.6",
     "@helia/delegated-routing-v1-http-api-client": "^4.2.1",
+    "@libp2p/auto-tls": "1.0.6-7a1665cd8",
     "@libp2p/autonat": "^2.0.16",
     "@libp2p/bootstrap": "^11.0.17",
     "@libp2p/circuit-relay-v2": "^3.1.7",
@@ -28,7 +29,7 @@
     "blockstore-fs": "^2.0.2",
     "datastore-fs": "^10.0.2",
     "helia": "^5.2.0",
-    "libp2p": "^2.5.0"
+    "libp2p": "2.5.2-7a1665cd8"
   },
   "scripts": {
     "start": "node src/main.ts"
