@@ -146,11 +146,19 @@ export class ArticleRepository {
     );
 
     // TODO: Maybe is it better to use voyager for replicating the individual articles db?
-    const article = new Article(articleName, articleAddress, this.orbitdb);
-    await article.init();
-    console.log(`Article ${articleName} replicated`);
+    // TODO: The article could not be currently available, we should handle this case better.
+    try {
+      const article = new Article(articleName, articleAddress, this.orbitdb);
+      await article.init();
+      console.log(`Article ${articleName} replicated`);
 
-    this.articles.set(articleName, article);
+      this.articles.set(articleName, article);
+    } catch (error) {
+      console.error(
+        `Error replicating article ${articleName}, article not found: ${error}`
+      );
+      return;
+    }
   }
 
   private getDBAddressCID() {
