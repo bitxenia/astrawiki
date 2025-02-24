@@ -22,99 +22,109 @@ import { gossipsub } from "@chainsafe/libp2p-gossipsub";
 import { webTransport } from "@libp2p/webtransport";
 import { keychain } from "@libp2p/keychain";
 import { autoTLS } from "@libp2p/auto-tls";
+import { Config } from "./config.ts";
 
-export const Libp2pOptions = {
-  // TODO: Ports were manually opened, in my case upnp did not work. JP
-  // Websocket ports need to differ from the tcp ports
-  addresses: {
-    listen: [
-      "/ip4/0.0.0.0/tcp/4001",
-      "/ip4/0.0.0.0/tcp/4002/ws",
-      "/ip4/0.0.0.0/tcp/4003/ws",
+export const CreateLibp2pOptions = (config: Config) => {
+  let appendAnnounce = [];
+  // If a public ip was provided, use append announce
+  if (config.publicIP != "0.0.0.0") {
+    console.log(config.publicIP);
+    appendAnnounce = [
+      `/ip4/${config.publicIP}/tcp/4001/`,
+      `/ip4/${config.publicIP}/tcp/4002/ws`,
+      `/ip4/${config.publicIP}/tcp/4003/tls/ws`,
+    ];
+  }
+
+  return {
+    // TODO: Ports were manually opened, in my case upnp did not work. JP
+    // Websocket ports need to differ from the tcp ports
+    addresses: {
+      listen: [
+        "/ip4/0.0.0.0/tcp/4001",
+        "/ip4/0.0.0.0/tcp/4002/ws",
+        "/ip4/0.0.0.0/tcp/4003/ws",
+      ],
+      // Two websocket adresses are added for auto-tls to work.
+      // Per: https://github.com/libp2p/js-libp2p/issues/2929
+      // TODO: Append announce is only needed if upnp does not work. And ports are manually opened. JP
+      appendAnnounce: appendAnnounce,
+    },
+    transports: [
+      tcp(),
+      //circuitRelayTransport(),
+      //webRTC(),
+      //webRTCDirect(),
+      //webTransport(),
+      webSockets({
+        filter: filters.all,
+      }),
     ],
-    // Two websocket adresses are added for auto-tls to work.
-    // Per: https://github.com/libp2p/js-libp2p/issues/2929
-    // TODO: Append announce is only needed if upnp does not work. And ports are manually opened. JP
-    // appendAnnounce: [
-    //   "/ip4/<public_ip>/tcp/4001/",
-    //   "/ip4/<public_ip>/tcp/4002/ws",
-    //   "/ip4/<public_ip>/tcp/4003/tls/ws",
-    // ],
-  },
-  transports: [
-    tcp(),
-    //circuitRelayTransport(),
-    //webRTC(),
-    //webRTCDirect(),
-    //webTransport(),
-    webSockets({
-      filter: filters.all,
-    }),
-  ],
-  connectionEncrypters: [
-    noise(),
-    // tls()
-  ],
-  streamMuxers: [yamux()],
-  connectionGater: {
-    denyDialMultiaddr: () => false,
-  },
-  peerDiscovery: [
-    pubsubPeerDiscovery({
-      interval: 1000,
-      topics: [
-        "bitxenia._peer-discovery._p2p._pubsub",
-        "_peer-discovery._p2p._pubsub",
-      ],
-      listenOnly: false,
-    }),
-    bootstrap({
-      // We use the default list of bootstrap nodes, found in the helia repo:
-      // https://github.com/ipfs/helia/blob/main/packages/helia/src/utils/bootstrappers.ts
-      list: [
-        "/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN",
-        "/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb",
-        "/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt",
-        // va1 is not in the TXT records for _dnsaddr.bootstrap.libp2p.io yet
-        // so use the host name directly
-        "/dnsaddr/va1.bootstrap.libp2p.io/p2p/12D3KooWKnDdG3iXw9eTFijk3EWSunZcFi54Zka4wmtqtt6rPxc8",
-        "/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ",
-      ],
-    }),
-  ],
-  services: {
-    pubsub: gossipsub({
-      allowPublishToZeroTopicPeers: true,
-    }),
-    autoNAT: autoNAT(),
-    dcutr: dcutr(),
-    delegatedRouting: () =>
-      createDelegatedRoutingV1HttpApiClient(
-        "https://delegated-ipfs.dev",
-        delegatedHTTPRoutingDefaults()
-      ),
-    dht: kadDHT({
-      // https://github.com/libp2p/js-libp2p/tree/main/packages/kad-dht#example---connecting-to-the-ipfs-amino-dht
-      protocol: "/ipfs/kad/1.0.0",
-      peerInfoMapper: removePrivateAddressesMapper,
-      // Server mode makes the node unable to receive connections, I think it is becuase it is always full.
-      // We do not need server mode anyway. JP
-      clientMode: true,
-      validators: {
-        ipns: ipnsValidator,
-      },
-      selectors: {
-        ipns: ipnsSelector,
-      },
-    }),
-    identify: identify(),
-    identifyPush: identifyPush(),
-    ping: ping(),
-    upnp: uPnPNAT(),
-    keychain: keychain(),
-    autoTLS: autoTLS({
-      // TODO: Ideally this should be removed, but for now to accelerate the creation of the address we set it to true.
-      autoConfirmAddress: true,
-    }),
-  },
+    connectionEncrypters: [
+      noise(),
+      // tls()
+    ],
+    streamMuxers: [yamux()],
+    connectionGater: {
+      denyDialMultiaddr: () => false,
+    },
+    peerDiscovery: [
+      pubsubPeerDiscovery({
+        interval: 1000,
+        topics: [
+          "bitxenia._peer-discovery._p2p._pubsub",
+          "_peer-discovery._p2p._pubsub",
+        ],
+        listenOnly: false,
+      }),
+      // bootstrap({
+      //   // We use the default list of bootstrap nodes, found in the helia repo:
+      //   // https://github.com/ipfs/helia/blob/main/packages/helia/src/utils/bootstrappers.ts
+      //   list: [
+      //     "/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN",
+      //     "/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb",
+      //     "/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt",
+      //     // va1 is not in the TXT records for _dnsaddr.bootstrap.libp2p.io yet
+      //     // so use the host name directly
+      //     "/dnsaddr/va1.bootstrap.libp2p.io/p2p/12D3KooWKnDdG3iXw9eTFijk3EWSunZcFi54Zka4wmtqtt6rPxc8",
+      //     "/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ",
+      //   ],
+      // }),
+    ],
+    services: {
+      pubsub: gossipsub({
+        allowPublishToZeroTopicPeers: true,
+      }),
+      autoNAT: autoNAT(),
+      dcutr: dcutr(),
+      delegatedRouting: () =>
+        createDelegatedRoutingV1HttpApiClient(
+          "https://delegated-ipfs.dev",
+          delegatedHTTPRoutingDefaults()
+        ),
+      // dht: kadDHT({
+      //   // https://github.com/libp2p/js-libp2p/tree/main/packages/kad-dht#example---connecting-to-the-ipfs-amino-dht
+      //   protocol: "/ipfs/kad/1.0.0",
+      //   peerInfoMapper: removePrivateAddressesMapper,
+      //   // Server mode makes the node unable to receive connections, I think it is becuase it is always full.
+      //   // We do not need server mode anyway. JP
+      //   clientMode: true,
+      //   validators: {
+      //     ipns: ipnsValidator,
+      //   },
+      //   selectors: {
+      //     ipns: ipnsSelector,
+      //   },
+      // }),
+      identify: identify(),
+      identifyPush: identifyPush(),
+      ping: ping(),
+      upnp: uPnPNAT(),
+      keychain: keychain(),
+      autoTLS: autoTLS({
+        // TODO: Ideally this should be removed, but for now to accelerate the creation of the address we set it to true.
+        autoConfirmAddress: true,
+      }),
+    },
+  };
 };

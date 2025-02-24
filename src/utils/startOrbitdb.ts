@@ -2,11 +2,12 @@ import { FsBlockstore } from "blockstore-fs";
 import { FsDatastore } from "datastore-fs";
 import { createHelia } from "helia";
 import { createOrbitDB } from "@orbitdb/core";
-import { Libp2pOptions } from "./libp2p.ts";
+import { CreateLibp2pOptions } from "./libp2p.ts";
 import { createLibp2p } from "libp2p";
 import { loadOrCreateSelfKey } from "@libp2p/config";
+import { Config } from "./config.ts";
 
-export const startOrbitDb = async () => {
+export const startOrbitDb = async (config: Config) => {
   const blockstore = new FsBlockstore("./data/ipfs/block-store");
   const datastore = new FsDatastore("./data/ipfs/data-store");
   await datastore.open();
@@ -16,7 +17,7 @@ export const startOrbitDb = async () => {
   const libp2p = await createLibp2p({
     datastore,
     privateKey,
-    ...Libp2pOptions,
+    ...CreateLibp2pOptions(config),
   });
 
   libp2p.addEventListener("certificate:provision", () => {

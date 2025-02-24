@@ -1,8 +1,11 @@
 import { startOrbitDb } from "./utils/startOrbitdb.ts";
 import { ArticleRepository } from "./articleRepository.ts";
+import { Config } from "./utils/config.ts";
 
 const main = async () => {
-  const orbitdb = await startOrbitDb();
+  const config = new Config();
+
+  const orbitdb = await startOrbitDb(config);
 
   console.log("Peer multiaddrs:");
   let multiaddrs = orbitdb.ipfs.libp2p.getMultiaddrs();
@@ -24,7 +27,7 @@ const main = async () => {
     }
   });
 
-  const articledb = new ArticleRepository(orbitdb);
+  const articledb = new ArticleRepository(orbitdb, config);
   await articledb.init();
 };
 

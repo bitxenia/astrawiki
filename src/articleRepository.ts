@@ -7,18 +7,18 @@ import {
 } from "@orbitdb/core";
 import { CID } from "multiformats/cid";
 import { Article } from "./article.ts";
-
-// TODO: Add a way to opt to use a different database name. JP
-const ARTICLE_DB_NAME = "bitxenia-wiki";
+import { Config } from "./utils/config.ts";
 
 export class ArticleRepository {
   orbitdb: OrbitDB;
+  articleRepositoryName: string;
   articleRepositoryDB: any;
   initialized: boolean | undefined;
   articles: Map<string, any>;
 
-  constructor(orbitdb: OrbitDB) {
+  constructor(orbitdb: OrbitDB, config: Config) {
     this.orbitdb = orbitdb;
+    this.articleRepositoryName = config.wikiName;
     this.initialized = false;
     this.articles = new Map();
   }
@@ -37,9 +37,12 @@ export class ArticleRepository {
     );
 
     // TODO: See if we need to search if the database exists first. JP
-    this.articleRepositoryDB = await this.orbitdb.open(ARTICLE_DB_NAME, {
-      AccessController: IPFSAccessController({ write: ["*"], storage }),
-    });
+    this.articleRepositoryDB = await this.orbitdb.open(
+      this.articleRepositoryName,
+      {
+        AccessController: IPFSAccessController({ write: ["*"], storage }),
+      }
+    );
     console.log(`Database address: ${this.articleRepositoryDB.address}`);
 
     await this.startDBServices();
