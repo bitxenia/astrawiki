@@ -39,11 +39,11 @@ Creado automáticamente del example en la primera corrida, puede crearse manualm
 
 Las configuraciones son las siguientes:
 
-- `WikiName`
+- `wiki_name`
   - Default: `bitxenia-wiki`
   - El nombre de la wiki va a determinar a que wiki se va a unir el nodo colaborador. Es este setting el necesario para optar colaborar por otra wiki.
  
-- `PublicIP`
+- `public_ip`
   - Default: `0.0.0.0`
   - Es posible indicar manualmente la ip pública del nodo si no puede encontrarse automáticamente por `libp2p`.
 
