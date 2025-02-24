@@ -28,7 +28,6 @@ export const CreateLibp2pOptions = (config: Config) => {
   let appendAnnounce = [];
   // If a public ip was provided, use append announce
   if (config.publicIP != "0.0.0.0") {
-    console.log(config.publicIP);
     appendAnnounce = [
       `/ip4/${config.publicIP}/tcp/4001/`,
       `/ip4/${config.publicIP}/tcp/4002/ws`,
