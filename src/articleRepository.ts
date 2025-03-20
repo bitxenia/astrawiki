@@ -7,7 +7,6 @@ import {
 } from "@orbitdb/core";
 import { CID } from "multiformats/cid";
 import { Article } from "./article.ts";
-import { Config } from "./utils/config.ts";
 
 export class ArticleRepository {
   orbitdb: OrbitDB;
@@ -16,9 +15,9 @@ export class ArticleRepository {
   initialized: boolean | undefined;
   articles: Map<string, any>;
 
-  constructor(orbitdb: OrbitDB, config: Config) {
+  constructor(orbitdb: OrbitDB, wikiName: string) {
     this.orbitdb = orbitdb;
-    this.articleRepositoryName = config.wikiName;
+    this.articleRepositoryName = wikiName;
     this.initialized = false;
     this.articles = new Map();
   }

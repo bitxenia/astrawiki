@@ -22,16 +22,15 @@ import { gossipsub } from "@chainsafe/libp2p-gossipsub";
 import { webTransport } from "@libp2p/webtransport";
 import { keychain } from "@libp2p/keychain";
 import { autoTLS } from "@libp2p/auto-tls";
-import { Config } from "./config.ts";
 
-export const CreateLibp2pOptions = (config: Config) => {
+export const CreateLibp2pOptions = (publicIP: string) => {
   let appendAnnounce = [];
   // If a public ip was provided, use append announce
-  if (config.publicIP != "0.0.0.0") {
+  if (publicIP != "0.0.0.0") {
     appendAnnounce = [
-      `/ip4/${config.publicIP}/tcp/4001/`,
-      `/ip4/${config.publicIP}/tcp/4002/ws`,
-      `/ip4/${config.publicIP}/tcp/4003/tls/ws`,
+      `/ip4/${publicIP}/tcp/4001/`,
+      `/ip4/${publicIP}/tcp/4002/ws`,
+      `/ip4/${publicIP}/tcp/4003/tls/ws`,
     ];
   }
 
@@ -124,6 +123,74 @@ export const CreateLibp2pOptions = (config: Config) => {
         // TODO: Ideally this should be removed, but for now to accelerate the creation of the address we set it to true.
         autoConfirmAddress: true,
       }),
+    },
+  };
+};
+
+export const CreateLibp2pOptionsBrowser = () => {
+  return {
+    // addresses: {
+    //   listen: ["/p2p-circuit", "/webrtc"],
+    // },
+    transports: [
+      // circuitRelayTransport(),
+      // webRTC(),
+      // webRTCDirect(),
+      // webTransport(),
+      webSockets({
+        filter: filters.all,
+      }),
+    ],
+    connectionEncrypters: [noise()],
+    streamMuxers: [yamux()],
+    connectionGater: {
+      denyDialMultiaddr: () => false,
+    },
+    peerDiscovery: [
+      pubsubPeerDiscovery({
+        interval: 1000,
+        topics: ["bitxenia._peer-discovery._p2p._pubsub"],
+        listenOnly: false,
+      }),
+      bootstrap({
+        // We use the default list of bootstrap nodes, found in the helia repo:
+        // https://github.com/ipfs/helia/blob/main/packages/helia/src/utils/bootstrappers.ts
+        list: [
+          "/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN",
+          "/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb",
+          "/dnsaddr/bootstrap.libp2p.io/p2p/QmcZf59bWwK5XFi76CZX8cbJ4BhTzzA3gU1ZjYZcYW3dwt",
+          // va1 is not in the TXT records for _dnsaddr.bootstrap.libp2p.io yet
+          // so use the host name directly
+          "/dnsaddr/va1.bootstrap.libp2p.io/p2p/12D3KooWKnDdG3iXw9eTFijk3EWSunZcFi54Zka4wmtqtt6rPxc8",
+          "/ip4/104.131.131.82/tcp/4001/p2p/QmaCpDMGvV2BGHeYERUEnRQAwe3N8SzbUtfsmvsqQLuvuJ",
+        ],
+      }),
+    ],
+    services: {
+      pubsub: gossipsub({
+        allowPublishToZeroTopicPeers: true,
+      }),
+      autoNAT: autoNAT(),
+      dcutr: dcutr(),
+      delegatedRouting: () =>
+        createDelegatedRoutingV1HttpApiClient(
+          "https://delegated-ipfs.dev",
+          delegatedHTTPRoutingDefaults()
+        ),
+      dht: kadDHT({
+        // https://github.com/libp2p/js-libp2p/tree/main/packages/kad-dht#example---connecting-to-the-ipfs-amino-dht
+        protocol: "/ipfs/kad/1.0.0",
+        peerInfoMapper: removePrivateAddressesMapper,
+        validators: {
+          ipns: ipnsValidator,
+        },
+        selectors: {
+          ipns: ipnsSelector,
+        },
+      }),
+      identify: identify(),
+      identifyPush: identifyPush(),
+      ping: ping(),
     },
   };
 };
