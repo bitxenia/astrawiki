@@ -1,4 +1,3 @@
-import { type OrbitDB } from "@orbitdb/core";
 import { IpfsWikiNodeInit } from "./index.ts";
 import { startOrbitDb } from "./utils/startOrbitdb.ts";
 import { ArticleRepository } from "./articleRepository.ts";
@@ -7,7 +6,7 @@ import { IpfsWikiNode } from "./index.ts";
 export class IpfsWikiNodeP2P implements IpfsWikiNode {
   wikiName: string;
   publicIP: string;
-  articleRepository: string;
+  articleRepository: ArticleRepository;
 
   constructor(init: IpfsWikiNodeInit) {
     this.wikiName = init.wikiName ?? "bitxenia-wiki";
@@ -36,8 +35,8 @@ export class IpfsWikiNodeP2P implements IpfsWikiNode {
         oldAddrs = newAddrs;
       }
     });
-    const articledb = new ArticleRepository(orbitdb, this.wikiName);
-    await articledb.init();
+    this.articleRepository = new ArticleRepository(orbitdb, this.wikiName);
+    await this.articleRepository.init();
   }
 
   public async getArticle(articleName: string): Promise<void> {}

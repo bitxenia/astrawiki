@@ -1,21 +1,32 @@
 import { FsBlockstore } from "blockstore-fs";
 import { FsDatastore } from "datastore-fs";
+import { LevelBlockstore } from "blockstore-level";
+import { LevelDatastore } from "datastore-level";
 import { createHelia } from "helia";
 import { createOrbitDB } from "@orbitdb/core";
-import { CreateLibp2pOptions, CreateLibp2pOptionsBrowser } from "./libp2p.ts";
+import { CreateLibp2pOptions } from "./libp2pOptions.ts";
+import { CreateLibp2pOptionsBrowser } from "./libp2pOptionsBrowser.ts";
 import { createLibp2p } from "libp2p";
 import { loadOrCreateSelfKey } from "@libp2p/config";
-import { Config } from "./config.ts";
+import { type OrbitDB } from "@orbitdb/core";
 
 export const startOrbitDb = async (publicIP: string) => {
-  const blockstore = new FsBlockstore("./data/ipfs/block-store");
-  const datastore = new FsDatastore("./data/ipfs/data-store");
+  const isBrowser = () => typeof window !== "undefined";
+
+  let blockstore: any;
+  let datastore: any;
+  if (isBrowser) {
+    blockstore = new LevelBlockstore(`data/ipfs/blocks`);
+    datastore = new LevelDatastore(`data/ipfs/datastore`);
+  } else {
+    blockstore = new FsBlockstore("./data/ipfs/block-store");
+    datastore = new FsDatastore("./data/ipfs/data-store");
+  }
   await datastore.open();
 
   const privateKey = await loadOrCreateSelfKey(datastore);
 
-  const isBrowser = () => typeof window !== "undefined";
-  let libp2pOptions;
+  let libp2pOptions: Object;
   if (isBrowser) {
     libp2pOptions = CreateLibp2pOptionsBrowser();
   } else {
@@ -42,4 +53,15 @@ export const startOrbitDb = async (publicIP: string) => {
   const orbitdb = await createOrbitDB({ ipfs: helia });
 
   return orbitdb;
+};
+
+/**
+ * Stops the OrbitDB peer and associated services.
+ * @function stopOrbitDB
+ * @param {OrbitDB} orbitdb The OrbitDB instance to stop.
+ */
+export const stopOrbitDB = async (orbitdb: OrbitDB) => {
+  await orbitdb.stop();
+  await orbitdb.ipfs.stop();
+  await orbitdb.ipfs.blockstore.unwrap().unwrap().child.db.close();
 };

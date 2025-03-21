@@ -25,6 +25,8 @@ export interface IpfsWikiNodeInit {
  *
  * By default the node will connect to the Bitxenia wiki, which name is "bitxenia-wiki", except another name is passed by parameter
  *
+ * The node is started by default.
+ *
  * @function createIpfsWikiNode
  * @param {IpfsWikiNodeInit} init Options used to create a IpfsWikiNode
  * @instance

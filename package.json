@@ -42,7 +42,9 @@
     "@libp2p/webtransport": "^5.0.37",
     "@orbitdb/core": "^2.5.0",
     "blockstore-fs": "^2.0.2",
+    "blockstore-level": "^2.0.1",
     "datastore-fs": "^10.0.2",
+    "datastore-level": "^11.0.1",
     "helia": "^5.3.0",
     "libp2p": "2.8.2"
   },
