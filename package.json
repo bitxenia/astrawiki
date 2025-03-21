@@ -45,6 +45,7 @@
     "blockstore-level": "^2.0.1",
     "datastore-fs": "^10.0.2",
     "datastore-level": "^11.0.1",
+    "diff-match-patch": "^1.0.5",
     "helia": "^5.3.0",
     "libp2p": "2.8.2"
   },

@@ -7,19 +7,25 @@ import {
 } from "@orbitdb/core";
 import { CID } from "multiformats/cid";
 import { Article } from "./article.ts";
+import { VersionID } from "./version.ts";
+import { ArticleInfo } from "./index.ts";
 
 export class ArticleRepository {
   orbitdb: OrbitDB;
-  articleRepositoryName: string;
+  wikiName: string;
   articleRepositoryDB: any;
   initialized: boolean | undefined;
-  articles: Map<string, any>;
+  articleAddressByName: Map<string, string>;
+  lastVersionFetchedByArticle: Map<string, VersionID>;
+  articlesReplicated: Map<string, Article>;
 
   constructor(orbitdb: OrbitDB, wikiName: string) {
     this.orbitdb = orbitdb;
-    this.articleRepositoryName = wikiName;
+    this.wikiName = wikiName;
     this.initialized = false;
-    this.articles = new Map();
+    this.articleAddressByName = new Map();
+    this.lastVersionFetchedByArticle = new Map();
+    this.articlesReplicated = new Map();
   }
 
   public async init() {
@@ -28,6 +34,84 @@ export class ArticleRepository {
     }
     this.initialized = true;
 
+    // Since the db address should never change, we can always create the database instead of opening it, and then
+    // use the address to look for providers and synchronize it.
+    await this.createArticleRepositoryDB();
+
+    // We see if the database already exist by trying to connect to other providers. If we do not find any
+    // we asume the database did not exist, but we should also continue to look for providers after.
+    await this.connectToProviders();
+
+    await this.startDBServices();
+    await this.setupDbEvents();
+  }
+
+  public async getArticle(
+    articleName: string,
+    articleVersionID?: string
+  ): Promise<ArticleInfo> {
+    // Iterate over the records in the article repository database to find the article
+
+    // Article protocol:
+    // <article-name>::<orbitdb_article_address>
+    // TODO: Implement a better protocol.
+    const articleAddress = this.articleAddressByName.get(articleName);
+    if (!articleAddress) {
+      throw Error(`Article ${articleName} not found`);
+    }
+    const article = new Article(articleName, this.orbitdb);
+    await article.initExisting(articleAddress);
+
+    // Update the last version fetched.
+    this.lastVersionFetchedByArticle[articleName] =
+      article.getCurrentVersionID();
+
+    const articleContent = article.getContent(articleVersionID);
+    const articleVersions = article.getVersions();
+
+    return {
+      name: articleName,
+      content: articleContent,
+      versionsInfo: articleVersions,
+    };
+  }
+
+  public async newArticle(articleName: string, articleContent: string) {
+    // Check if the article already exists
+    if (this.articleAddressByName.has(articleName)) {
+      throw Error(`Article ${articleName} already exists`);
+    }
+    const article = new Article(articleName, this.orbitdb);
+    const articleAdress = await article.initNew(articleContent);
+
+    await this.articleRepositoryDB.add(articleName + "::" + articleAdress);
+  }
+
+  public async editArticle(
+    articleName: string,
+    newArticleContent: string
+  ): Promise<void> {
+    const articleAddress = this.articleAddressByName.get(articleName);
+    if (!articleAddress) {
+      throw Error(`Article ${articleName} not found`);
+    }
+    // TODO: See if somehow an edit to a not previously fetched article is possible.
+    const lastVersionFetched =
+      this.lastVersionFetchedByArticle.get(articleName);
+    if (!lastVersionFetched) {
+      throw Error(`Article ${articleName} was not previously fetched`);
+    }
+    const article = new Article(articleName, this.orbitdb);
+    await article.initExisting(articleAddress);
+
+    await article.newContent(newArticleContent, lastVersionFetched);
+  }
+
+  public async getArticleList(): Promise<string[]> {
+    return Array.from(this.articleAddressByName.keys());
+  }
+
+  private async createArticleRepositoryDB() {
     // We use the default storage, found in:
     // https://github.com/orbitdb/orbitdb/blob/d290032ebf1692feee1985853b2c54d376bbfc82/src/access-controllers/ipfs.js#L56
     const storage = await ComposedStorage(
@@ -36,17 +120,53 @@ export class ArticleRepository {
     );
 
     // TODO: See if we need to search if the database exists first. JP
-    this.articleRepositoryDB = await this.orbitdb.open(
-      this.articleRepositoryName,
-      {
-        AccessController: IPFSAccessController({ write: ["*"], storage }),
-      }
-    );
+    this.articleRepositoryDB = await this.orbitdb.open(this.wikiName, {
+      AccessController: IPFSAccessController({ write: ["*"], storage }),
+    });
     console.log(`Database address: ${this.articleRepositoryDB.address}`);
+  }
 
-    await this.startDBServices();
+  private async connectToProviders() {
+    const cid = this.getDBAddressCID();
 
-    await this.setupDbEvents();
+    // TODO: Handle well the case no providers are found, which is a serius error
+    //       because it means no colaborator is replicating and announcing the database
+    let providers = await this.orbitdb.ipfs.libp2p.contentRouting.findProviders(
+      cid
+    );
+
+    let notConnected = true;
+    while (notConnected) {
+      try {
+        // Iterate over the providers found for the given cid of the database address
+        for await (const provider of providers) {
+          console.log(`Found provider: ${provider.id}`);
+          // multiaddrs found
+          console.log("Multiaddrs:", provider.multiaddrs.toString());
+
+          // Connect to the provider
+          try {
+            await this.orbitdb.ipfs.libp2p.dial(provider.multiaddrs);
+          } catch (err) {
+            console.error(err);
+            continue;
+          }
+
+          // The provider is now connected
+          console.log("Connected to provider:", provider.id);
+          notConnected = false;
+
+          // Stop the iteration
+          break;
+        }
+      } catch (err) {
+        console.error("Error connecting to providers:", err);
+        console.log("Retrying to connect to providers...");
+        // Wait 1 second before retrying
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // TODO: Retrying doesn't work, it freezes in the loop indefinitely.
+      }
+    }
   }
 
   private async startDBServices() {
@@ -65,7 +185,7 @@ export class ArticleRepository {
       for await (const record of this.articleRepositoryDB.iterator()) {
         let [articleName, articleAddress] = record.value.split("::");
         // If we already have the article replicated, skip it
-        if (this.articles.has(articleName)) {
+        if (this.articlesReplicated.has(articleName)) {
           continue;
         }
         await this.replicateArticle(articleName, articleAddress);
@@ -150,11 +270,11 @@ export class ArticleRepository {
     // TODO: Maybe is it better to use voyager for replicating the individual articles db?
     // TODO: The article could not be currently available, we should handle this case better.
     try {
-      const article = new Article(articleName, articleAddress, this.orbitdb);
-      await article.init();
+      const article = new Article(articleName, this.orbitdb);
+      await article.initExisting(articleAddress);
       console.log(`Article ${articleName} replicated`);
 
-      this.articles.set(articleName, article);
+      this.articlesReplicated.set(articleName, article);
     } catch (error) {
       console.error(
         `Error replicating article ${articleName}, article not found: ${error}`

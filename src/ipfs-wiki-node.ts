@@ -1,4 +1,4 @@
-import { IpfsWikiNodeInit } from "./index.ts";
+import { ArticleInfo, IpfsWikiNodeInit } from "./index.ts";
 import { startOrbitDb } from "./utils/startOrbitdb.ts";
 import { ArticleRepository } from "./articleRepository.ts";
 import { IpfsWikiNode } from "./index.ts";
@@ -39,13 +39,36 @@ export class IpfsWikiNodeP2P implements IpfsWikiNode {
     await this.articleRepository.init();
   }
 
-  public async getArticle(articleName: string): Promise<void> {}
+  public async getArticle(
+    articleName: string,
+    articleVersionID?: string
+  ): Promise<ArticleInfo> {
+    console.log(`Fetching article ${articleName}`);
+    const article = await this.articleRepository.getArticle(
+      articleName,
+      articleVersionID
+    );
+    console.log(`Article ${articleName} fetched`);
+    return article;
+  }
 
-  public async newArticle(articleName: string): Promise<void> {}
+  public async newArticle(
+    articleName: string,
+    articleContent: string
+  ): Promise<void> {
+    await this.articleRepository.newArticle(articleName, articleContent);
+  }
 
-  public async editArticle(): Promise<void> {}
+  public async editArticle(
+    articleName: string,
+    newArticleContent: string
+  ): Promise<void> {
+    await this.articleRepository.editArticle(articleName, newArticleContent);
+  }
 
-  public async getArticleList(): Promise<void> {}
+  public async getArticleList(): Promise<string[]> {
+    return await this.articleRepository.getArticleList();
+  }
 
   public async stop(): Promise<void> {
     // TODO: Implement
