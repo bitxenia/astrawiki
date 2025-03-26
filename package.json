@@ -12,19 +12,22 @@
     "node": ">=20.0.0"
   },
   "files": [
-    "src",
     "dist"
   ],
   "type": "module",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    "import": "./dist/index.js",
+    "types": "./dist/types/index.d.ts"
+  },
   "dependencies": {
     "@chainsafe/libp2p-gossipsub": "^14.1.0",
     "@chainsafe/libp2p-noise": "^16.1.0",
     "@chainsafe/libp2p-yamux": "^7.0.1",
     "@constl/orbit-db-types": "^2.0.6",
     "@helia/delegated-routing-v1-http-api-client": "^4.2.2",
-    "@ipshipyard/libp2p-auto-tls": "1.0.0",
-    "@libp2p/auto-tls": "^1.0.6",
+    "@ipshipyard/libp2p-auto-tls": "^1.0.0",
     "@libp2p/autonat": "^2.0.28",
     "@libp2p/bootstrap": "^11.0.32",
     "@libp2p/circuit-relay-v2": "^3.2.8",
@@ -47,7 +50,13 @@
     "datastore-level": "^11.0.1",
     "diff-match-patch": "^1.0.5",
     "helia": "^5.3.0",
-    "libp2p": "2.8.2"
+    "libp2p": "2.8.2",
+    "typescript": "^5.8.2"
   },
-  "scripts": {}
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/diff-match-patch": "^1.0.36"
+  }
 }

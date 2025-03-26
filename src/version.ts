@@ -1,4 +1,3 @@
-import { all } from "@libp2p/websockets/dist/src/filters";
 import DiffMatchPatch, { patch_obj } from "diff-match-patch";
 
 export type VersionID = string;
@@ -129,7 +128,7 @@ export function getBranch(
   version: VersionID,
   allVersions: Map<VersionID, Version>
 ): Version[] {
-  const ret = [];
+  const ret: Version[] = [];
   let currentVersion: VersionID | null = version;
   while (currentVersion) {
     const version = allVersions.get(currentVersion);

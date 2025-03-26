@@ -2,7 +2,7 @@
  * @module IpfsWikiNode
  * @description Provides an interface for users to interact with IpfsWikiNode.
  */
-import { IpfsWikiNodeP2P } from "./ipfs-wiki-node.ts";
+import { IpfsWikiNodeP2P } from "./ipfs-wiki-node.js";
 
 /**
  * Options used to create a IpfsWikiNode.
@@ -42,10 +42,6 @@ export interface IpfsWikiNodeInit {
 export async function createIpfsWikiNode(
   init: IpfsWikiNodeInit = {}
 ): Promise<IpfsWikiNodeP2P> {
-  init.wikiName = init.wikiName ?? "bitxenia-wiki";
-  init.publicIP = init.publicIP ?? "0.0.0.0";
-  init.isCollaborator = init.isCollaborator ?? false;
-
   const node = new IpfsWikiNodeP2P(init);
   await node.start();
   return node;

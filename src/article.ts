@@ -5,7 +5,7 @@ import {
   createVersion,
   getBranch,
   getMainBranch,
-} from "./version.ts";
+} from "./version.js";
 import {
   type OrbitDB,
   ComposedStorage,
@@ -118,7 +118,7 @@ export class Article {
     let newVersion: Version;
     if (!articleParentVersionID) {
       // It means this is the first version
-      newVersion = createVersion("", content, articleParentVersionID);
+      newVersion = createVersion("", content, articleParentVersionID ?? null);
     } else {
       const changesUntilVersion = getBranch(
         articleParentVersionID,

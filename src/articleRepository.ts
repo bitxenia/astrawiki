@@ -6,9 +6,9 @@ import {
   LRUStorage,
 } from "@orbitdb/core";
 import { CID } from "multiformats/cid";
-import { Article } from "./article.ts";
-import { VersionID } from "./version.ts";
-import { ArticleInfo } from "./index.ts";
+import { Article } from "./article.js";
+import { VersionID } from "./version.js";
+import { ArticleInfo } from "./index.js";
 
 export class ArticleRepository {
   orbitdb: OrbitDB;

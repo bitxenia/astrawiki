@@ -21,10 +21,11 @@ import { pubsubPeerDiscovery } from "@libp2p/pubsub-peer-discovery";
 import { gossipsub } from "@chainsafe/libp2p-gossipsub";
 import { webTransport } from "@libp2p/webtransport";
 import { keychain } from "@libp2p/keychain";
-import { autoTLS } from "@libp2p/auto-tls";
+import { autoTLS } from "@ipshipyard/libp2p-auto-tls";
+import { Libp2pOptions } from "libp2p";
 
-export const CreateLibp2pOptions = (publicIP: string) => {
-  let appendAnnounce = [];
+export function CreateLibp2pOptions(publicIP: string): Partial<Libp2pOptions> {
+  let appendAnnounce: string[] = [];
   // If a public ip was provided, use append announce
   if (publicIP != "0.0.0.0") {
     appendAnnounce = [
@@ -77,7 +78,7 @@ export const CreateLibp2pOptions = (publicIP: string) => {
       }),
       // bootstrap({
       //   // We use the default list of bootstrap nodes, found in the helia repo:
-      //   // https://github.com/ipfs/helia/blob/main/packages/helia/src/utils/bootstrappers.ts
+      //   // https://github.com/ipfs/helia/blob/main/packages/helia/src/utils/bootstrappers.js
       //   list: [
       //     "/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN",
       //     "/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb",
@@ -125,4 +126,4 @@ export const CreateLibp2pOptions = (publicIP: string) => {
       }),
     },
   };
-};
+}

@@ -18,8 +18,9 @@ import * as filters from "@libp2p/websockets/filters";
 import { pubsubPeerDiscovery } from "@libp2p/pubsub-peer-discovery";
 import { gossipsub } from "@chainsafe/libp2p-gossipsub";
 import { webTransport } from "@libp2p/webtransport";
+import { Libp2pOptions } from "libp2p";
 
-export const CreateLibp2pOptionsBrowser = () => {
+export function CreateLibp2pOptionsBrowser(): Partial<Libp2pOptions> {
   return {
     // addresses: {
     //   listen: ["/p2p-circuit", "/webrtc"],
@@ -46,7 +47,7 @@ export const CreateLibp2pOptionsBrowser = () => {
       }),
       bootstrap({
         // We use the default list of bootstrap nodes, found in the helia repo:
-        // https://github.com/ipfs/helia/blob/main/packages/helia/src/utils/bootstrappers.ts
+        // https://github.com/ipfs/helia/blob/main/packages/helia/src/utils/bootstrappers.js
         list: [
           "/dnsaddr/bootstrap.libp2p.io/p2p/QmNnooDu7bfjPFoTZYxMNLWUQJyrVwtbZg5gBMjTezGAJN",
           "/dnsaddr/bootstrap.libp2p.io/p2p/QmbLHAnMoJPWSCR5Zhtx6BHJX9KiKNN6tpvbUcqanj75Nb",
@@ -85,4 +86,4 @@ export const CreateLibp2pOptionsBrowser = () => {
       ping: ping(),
     },
   };
-};
+}

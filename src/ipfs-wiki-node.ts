@@ -1,18 +1,22 @@
-import { ArticleInfo, IpfsWikiNodeInit } from "./index.ts";
-import { startOrbitDb } from "./utils/startOrbitdb.ts";
-import { ArticleRepository } from "./articleRepository.ts";
-import { IpfsWikiNode } from "./index.ts";
+import { ArticleInfo, IpfsWikiNodeInit } from "./index.js";
+import { startOrbitDb } from "./utils/startOrbitdb.js";
+import { ArticleRepository } from "./articleRepository.js";
+import { IpfsWikiNode } from "./index.js";
 
 export class IpfsWikiNodeP2P implements IpfsWikiNode {
-  nodeConfig: IpfsWikiNodeInit;
+  wikiName: string;
+  publicIP: string;
+  isCollaborator: boolean;
   articleRepository: ArticleRepository;
 
   constructor(init: IpfsWikiNodeInit) {
-    this.nodeConfig = init;
+    this.wikiName = init.wikiName ?? "bitxenia-wiki";
+    this.publicIP = init.publicIP ?? "0.0.0.0";
+    this.isCollaborator = init.isCollaborator ?? false;
   }
 
   public async start(): Promise<void> {
-    const orbitdb = await startOrbitDb(this.nodeConfig.publicIP);
+    const orbitdb = await startOrbitDb(this.publicIP);
 
     console.log("Peer multiaddrs:");
     let multiaddrs = orbitdb.ipfs.libp2p.getMultiaddrs();
@@ -35,8 +39,8 @@ export class IpfsWikiNodeP2P implements IpfsWikiNode {
     });
     this.articleRepository = new ArticleRepository(
       orbitdb,
-      this.nodeConfig.wikiName,
-      this.nodeConfig.isCollaborator
+      this.wikiName,
+      this.isCollaborator
     );
     await this.articleRepository.init();
   }

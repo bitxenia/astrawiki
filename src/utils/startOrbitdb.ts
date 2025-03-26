@@ -4,8 +4,8 @@ import { LevelBlockstore } from "blockstore-level";
 import { LevelDatastore } from "datastore-level";
 import { createHelia } from "helia";
 import { createOrbitDB } from "@orbitdb/core";
-import { CreateLibp2pOptions } from "./libp2pOptions.ts";
-import { CreateLibp2pOptionsBrowser } from "./libp2pOptionsBrowser.ts";
+import { CreateLibp2pOptions } from "./libp2pOptions.js";
+import { CreateLibp2pOptionsBrowser } from "./libp2pOptionsBrowser.js";
 import { createLibp2p } from "libp2p";
 import { loadOrCreateSelfKey } from "@libp2p/config";
 import { type OrbitDB } from "@orbitdb/core";
@@ -15,7 +15,7 @@ export const startOrbitDb = async (publicIP: string) => {
 
   let blockstore: any;
   let datastore: any;
-  if (isBrowser) {
+  if (isBrowser()) {
     blockstore = new LevelBlockstore(`data/ipfs/blocks`);
     datastore = new LevelDatastore(`data/ipfs/datastore`);
   } else {
@@ -27,7 +27,7 @@ export const startOrbitDb = async (publicIP: string) => {
   const privateKey = await loadOrCreateSelfKey(datastore);
 
   let libp2pOptions: Object;
-  if (isBrowser) {
+  if (isBrowser()) {
     libp2pOptions = CreateLibp2pOptionsBrowser();
   } else {
     libp2pOptions = CreateLibp2pOptions(publicIP);
