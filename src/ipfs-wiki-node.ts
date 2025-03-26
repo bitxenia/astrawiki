@@ -4,17 +4,15 @@ import { ArticleRepository } from "./articleRepository.ts";
 import { IpfsWikiNode } from "./index.ts";
 
 export class IpfsWikiNodeP2P implements IpfsWikiNode {
-  wikiName: string;
-  publicIP: string;
+  nodeConfig: IpfsWikiNodeInit;
   articleRepository: ArticleRepository;
 
   constructor(init: IpfsWikiNodeInit) {
-    this.wikiName = init.wikiName ?? "bitxenia-wiki";
-    this.publicIP = init.publicIP ?? "0.0.0.0";
+    this.nodeConfig = init;
   }
 
   public async start(): Promise<void> {
-    const orbitdb = await startOrbitDb(this.publicIP);
+    const orbitdb = await startOrbitDb(this.nodeConfig.publicIP);
 
     console.log("Peer multiaddrs:");
     let multiaddrs = orbitdb.ipfs.libp2p.getMultiaddrs();
@@ -35,7 +33,11 @@ export class IpfsWikiNodeP2P implements IpfsWikiNode {
         oldAddrs = newAddrs;
       }
     });
-    this.articleRepository = new ArticleRepository(orbitdb, this.wikiName);
+    this.articleRepository = new ArticleRepository(
+      orbitdb,
+      this.nodeConfig.wikiName,
+      this.nodeConfig.isCollaborator
+    );
     await this.articleRepository.init();
   }
 

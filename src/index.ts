@@ -18,6 +18,14 @@ export interface IpfsWikiNodeInit {
    * The public ip of the node
    */
   publicIP?: string;
+
+  /**
+   * A collaborator is a node which helps with the availability and persistence of the wiki.
+   * This means that the collaborator will replicate all the wiki's data, using its own storage.
+   * Web browsers are not good candidates for collaborators, since they are not always online.
+   * By default the node is not a collaborator.
+   */
+  isCollaborator?: boolean;
 }
 
 /**
@@ -34,6 +42,10 @@ export interface IpfsWikiNodeInit {
 export async function createIpfsWikiNode(
   init: IpfsWikiNodeInit = {}
 ): Promise<IpfsWikiNodeP2P> {
+  init.wikiName = init.wikiName ?? "bitxenia-wiki";
+  init.publicIP = init.publicIP ?? "0.0.0.0";
+  init.isCollaborator = init.isCollaborator ?? false;
+
   const node = new IpfsWikiNodeP2P(init);
   await node.start();
   return node;

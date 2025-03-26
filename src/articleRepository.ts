@@ -13,15 +13,17 @@ import { ArticleInfo } from "./index.ts";
 export class ArticleRepository {
   orbitdb: OrbitDB;
   wikiName: string;
+  isCollaborator: boolean;
   articleRepositoryDB: any;
   initialized: boolean | undefined;
   articleAddressByName: Map<string, string>;
   lastVersionFetchedByArticle: Map<string, VersionID>;
   articlesReplicated: Map<string, Article>;
 
-  constructor(orbitdb: OrbitDB, wikiName: string) {
+  constructor(orbitdb: OrbitDB, wikiName: string, isCollaborator: boolean) {
     this.orbitdb = orbitdb;
     this.wikiName = wikiName;
+    this.isCollaborator = isCollaborator;
     this.initialized = false;
     this.articleAddressByName = new Map();
     this.lastVersionFetchedByArticle = new Map();
@@ -128,53 +130,35 @@ export class ArticleRepository {
 
   private async connectToProviders() {
     const cid = this.getDBAddressCID();
-
-    // TODO: Handle well the case no providers are found, which is a serius error
-    //       because it means no colaborator is replicating and announcing the database
-    let providers = await this.orbitdb.ipfs.libp2p.contentRouting.findProviders(
-      cid
-    );
-
-    let notConnected = true;
-    while (notConnected) {
-      try {
-        // Iterate over the providers found for the given cid of the database address
-        for await (const provider of providers) {
-          console.log(`Found provider: ${provider.id}`);
-          // multiaddrs found
-          console.log("Multiaddrs:", provider.multiaddrs.toString());
-
-          // Connect to the provider
-          try {
-            await this.orbitdb.ipfs.libp2p.dial(provider.multiaddrs);
-          } catch (err) {
-            console.error(err);
-            continue;
-          }
-
-          // The provider is now connected
-          console.log("Connected to provider:", provider.id);
-          notConnected = false;
-
-          // Stop the iteration
-          break;
+    try {
+      // TODO: If no providers are found we should have a timeout to stop searching.
+      let providers =
+        await this.articleRepositoryDB.ipfs.libp2p.contentRouting.findProviders(
+          cid
+        );
+      for await (const provider of providers) {
+        console.log(`Connecting to provider: ${provider.id}`);
+        try {
+          await this.orbitdb.ipfs.libp2p.dial(provider.id);
+        } catch (error) {
+          console.error(
+            `Error connecting to provider ${provider.id}: ${error}`
+          );
         }
-      } catch (err) {
-        console.error("Error connecting to providers:", err);
-        console.log("Retrying to connect to providers...");
-        // Wait 1 second before retrying
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        // TODO: Retrying doesn't work, it freezes in the loop indefinitely.
       }
+    } catch (error) {
+      console.error("Error finding providers:", error);
     }
   }
 
   private async startDBServices() {
     // Servicies are long running tasks, we don't need to await them
+    this.startConnectToProvidersService();
 
-    this.startArticleReplicationService();
-    // this.startConnectToProvidersService();
-    this.startProvideDBService();
+    if (this.isCollaborator) {
+      this.startArticleReplicationService();
+      this.startProvideDBService();
+    }
   }
 
   private async startArticleReplicationService() {
@@ -199,24 +183,7 @@ export class ArticleRepository {
     const cid = this.getDBAddressCID();
 
     while (true) {
-      try {
-        let providers =
-          await this.articleRepositoryDB.ipfs.libp2p.contentRouting.findProviders(
-            cid
-          );
-        for await (const provider of providers) {
-          console.log(`Connecting to provider: ${provider.id}`);
-          try {
-            await this.orbitdb.ipfs.libp2p.dial(provider.id);
-          } catch (error) {
-            console.error(
-              `Error connecting to provider ${provider.id}: ${error}`
-            );
-          }
-        }
-      } catch (error) {
-        console.error("Error finding providers:", error);
-      }
+      this.connectToProviders();
       // Wait 60 seconds before searching for providers again
       await new Promise((resolve) => setTimeout(resolve, 60000));
     }
@@ -251,7 +218,10 @@ export class ArticleRepository {
   private async setupDbEvents() {
     this.articleRepositoryDB.events.on("update", async (entry) => {
       let [articleName, articleAddress] = entry.payload.value.split("::");
-      await this.replicateArticle(articleName, articleAddress);
+      this.articleAddressByName.set(articleName, articleAddress);
+      if (this.isCollaborator) {
+        await this.replicateArticle(articleName, articleAddress);
+      }
     });
 
     this.articleRepositoryDB.events.on("join", async (peerId, heads) => {
