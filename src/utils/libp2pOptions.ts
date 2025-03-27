@@ -24,7 +24,7 @@ import { keychain } from "@libp2p/keychain";
 import { autoTLS } from "@ipshipyard/libp2p-auto-tls";
 import { Libp2pOptions } from "libp2p";
 
-export function CreateLibp2pOptions(publicIP: string): Partial<Libp2pOptions> {
+export function CreateLibp2pOptions(publicIP: string) {
   let appendAnnounce: string[] = [];
   // If a public ip was provided, use append announce
   if (publicIP != "0.0.0.0") {
