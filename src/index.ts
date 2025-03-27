@@ -15,19 +15,18 @@ export interface IpfsWikiNodeInit {
   wikiName?: string;
 
   /**
-   * The public ip of the node
-   */
-  publicIP?: string;
-
-  /**
    * A collaborator is a node which helps with the availability and persistence of the wiki.
-   * This means that the collaborator will replicate all the wiki's data, using its own storage.
+   * This means that the collaborator will replicate all the wiki's data, using its own local storage.
    * Web browsers are not good candidates for collaborators, since they are not always online.
-   * If the node is not a collaborator it will fail to start if no providers are found.
-   * So a collaborator node is needed to create a new wiki.
+   * Only collaborator nodes can create a new wiki. If a node is not a collaborator, it can only connect to an existing wiki.
    * By default the node is not a collaborator.
    */
   isCollaborator?: boolean;
+
+  /**
+   * The public ip of the node
+   */
+  publicIP?: string;
 }
 
 /**
@@ -76,6 +75,9 @@ export interface IpfsWikiNode {
    */
   editArticle(articleName: string, newArticleContent: string): Promise<void>;
 
+  /**
+   * Gets the list of articles in the wiki
+   */
   getArticleList(): Promise<string[]>;
 
   /**
