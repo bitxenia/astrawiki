@@ -36,7 +36,7 @@ export function CreateLibp2pOptions(publicIP: string) {
   }
 
   return {
-    // TODO: Ports were manually opened, in my case upnp did not work. JP
+    // TODO: Ports were manually opened, in my case upnp did not work.
     // Websocket ports need to differ from the tcp ports
     addresses: {
       listen: [
@@ -46,7 +46,7 @@ export function CreateLibp2pOptions(publicIP: string) {
       ],
       // Two websocket adresses are added for auto-tls to work.
       // Per: https://github.com/libp2p/js-libp2p/issues/2929
-      // TODO: Append announce is only needed if upnp does not work. And ports are manually opened. JP
+      // TODO: Append announce is only needed if upnp does not work. And ports are manually opened.
       appendAnnounce: appendAnnounce,
     },
     transports: [
@@ -106,7 +106,7 @@ export function CreateLibp2pOptions(publicIP: string) {
         protocol: "/ipfs/kad/1.0.0",
         peerInfoMapper: removePrivateAddressesMapper,
         // Server mode makes the node unable to receive connections, I think it is becuase it is always full.
-        // We do not need server mode anyway. JP
+        // We do not need server mode anyway.
         clientMode: true,
         validators: {
           ipns: ipnsValidator,

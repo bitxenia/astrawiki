@@ -40,17 +40,16 @@ export class ArticleRepository {
     // use the address to look for providers and synchronize it.
     await this.createArticleRepositoryDB();
 
-    // If we are not a collaborator, we need to open an existing database by connecting to providers.
-    if (!this.isCollaborator) {
-      const providersFound = await this.connectToProviders();
-      // If no providers were found, we raise an error.
-      if (!providersFound) {
-        // TODO: Create an specific error.
-        throw Error(
-          `No providers found for the database ${this.articleRepositoryDB.address}`
-        );
-      }
+    // If the wiki already exists, we sync the database with the providers.
+    const providersFound = await this.connectToProviders();
+    if (!this.isCollaborator && !providersFound) {
+      // If we are not a collaborator and no providers were found, we need to raise an error.
+      // This is because a non collaborator node cannot create a new wiki.
+      throw Error(
+        `No providers found for the database ${this.articleRepositoryDB.address}`
+      );
     }
+    await this.syncAndReplicate();
 
     await this.startDBServices();
     await this.setupDbEvents();
@@ -129,7 +128,7 @@ export class ArticleRepository {
       await IPFSBlockStorage({ ipfs: this.orbitdb.ipfs, pin: true })
     );
 
-    // TODO: See if we need to search if the database exists first. JP
+    // TODO: See if we need to search if the database exists first.
     this.articleRepositoryDB = await this.orbitdb.open(this.wikiName, {
       AccessController: IPFSAccessController({ write: ["*"], storage }),
     });
@@ -140,6 +139,7 @@ export class ArticleRepository {
     const cid = this.getDBAddressCID();
     let providersFound = false;
 
+    // TODO: Check if we need to add a timeout.
     try {
       let providers =
         await this.orbitdb.ipfs.libp2p.contentRouting.findProviders(cid);
@@ -160,37 +160,66 @@ export class ArticleRepository {
     return providersFound;
   }
 
+  private async syncAndReplicate() {
+    // Because of orbitdb eventual consistency nature, we need to keep if new articles were added
+    // when we sync with other peers. This is because not all the entry sync updates trigger the
+    // "update" event. Only the latest entry is triggered.
+
+    for await (const record of this.articleRepositoryDB.iterator()) {
+      let [articleName, articleAddress] = record.value.split("::");
+      // If we already have the article replicated, skip it
+      if (this.articleAddressByName.has(articleName)) {
+        continue;
+      }
+      this.articleAddressByName.set(articleName, articleAddress);
+      // If we are a collaborator, replicate the article
+      if (this.isCollaborator) {
+        await this.replicateArticle(articleName, articleAddress);
+      }
+    }
+  }
+
   private async startDBServices() {
     // Servicies are long running tasks, we don't need to await them
     this.startConnectToProvidersService();
 
     if (this.isCollaborator) {
-      this.startArticleReplicationService();
+      this.startSyncAndReplicateService();
       this.startProvideDBService();
     }
   }
 
-  private async startArticleReplicationService() {
-    // Because of orbitdb eventual consistency nature, we need to keep if new articles were added
-    // when we sync with other peers. This is because not all the entry sync updates trigger the
-    // "update" event. Only the latest entry is triggered. JP
+  private async provideDB() {
+    // TODO: See if we need to reprovide or if it is done automatically with helia/libp2p.
+    // TODO: See if we need to also provide the "file", we could be getting "banned" from the network.
+    const cid = this.getDBAddressCID();
+
+    // TODO: Find a better way to provide & reprovide the database.
+    try {
+      console.log("Providing database address...");
+      const startTime = performance.now();
+      await this.orbitdb.ipfs.routing.provide(cid);
+      const endTime = performance.now();
+
+      console.log(
+        `Database address provided, took ${
+          (endTime - startTime) / 1000
+        } seconds`
+      );
+    } catch (error) {
+      console.error("Error providing database:", error);
+    }
+  }
+
+  private async startSyncAndReplicateService() {
     while (true) {
-      for await (const record of this.articleRepositoryDB.iterator()) {
-        let [articleName, articleAddress] = record.value.split("::");
-        // If we already have the article replicated, skip it
-        if (this.articlesReplicated.has(articleName)) {
-          continue;
-        }
-        await this.replicateArticle(articleName, articleAddress);
-      }
+      this.syncAndReplicate();
       // Wait 60 seconds before searching for new articles
       await new Promise((resolve) => setTimeout(resolve, 60000));
     }
   }
 
   private async startConnectToProvidersService() {
-    const cid = this.getDBAddressCID();
-
     while (true) {
       this.connectToProviders();
       // Wait 60 seconds before searching for providers again
@@ -199,26 +228,8 @@ export class ArticleRepository {
   }
 
   private async startProvideDBService() {
-    // TODO: See if we need to reprovide or if it is done automatically with helia/libp2p. JP
-    // TODO: See if we need to also provide the file, we could be getting "banned" from the network. JP
-    const cid = this.getDBAddressCID();
-
-    // TODO: Find a better way to provide & reprovide the database. JP
     while (true) {
-      try {
-        console.log("Providing database address...");
-        const startTime = performance.now();
-        await this.orbitdb.ipfs.routing.provide(cid);
-        const endTime = performance.now();
-
-        console.log(
-          `Database address provided, took ${
-            (endTime - startTime) / 1000
-          } seconds`
-        );
-      } catch (error) {
-        console.error("Error providing database:", error);
-      }
+      this.provideDB();
       // Wait 60 seconds before providing the database again
       await new Promise((resolve) => setTimeout(resolve, 60000));
     }
