@@ -133,9 +133,7 @@ export class ArticleRepository {
     try {
       // TODO: If no providers are found we should have a timeout to stop searching.
       let providers =
-        await this.articleRepositoryDB.ipfs.libp2p.contentRouting.findProviders(
-          cid
-        );
+        await this.orbitdb.ipfs.libp2p.contentRouting.findProviders(cid);
       for await (const provider of providers) {
         console.log(`Connecting to provider: ${provider.id}`);
         try {

@@ -12,6 +12,11 @@ import { type OrbitDB } from "@orbitdb/core";
 
 export const startOrbitDb = async (publicIP: string) => {
   const isBrowser = () => typeof window !== "undefined";
+  if (isBrowser()) {
+    console.log("Browser enviroment detected");
+  } else {
+    console.log("Node enviroment detected");
+  }
 
   let blockstore: any;
   let datastore: any;
