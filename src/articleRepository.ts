@@ -40,9 +40,17 @@ export class ArticleRepository {
     // use the address to look for providers and synchronize it.
     await this.createArticleRepositoryDB();
 
-    // We see if the database already exist by trying to connect to other providers. If we do not find any
-    // we asume the database did not exist, but we should also continue to look for providers after.
-    await this.connectToProviders();
+    // If we are not a collaborator, we need to open an existing database by connecting to providers.
+    if (!this.isCollaborator) {
+      const providersFound = await this.connectToProviders();
+      // If no providers were found, we raise an error.
+      if (!providersFound) {
+        // TODO: Create an specific error.
+        throw Error(
+          `No providers found for the database ${this.articleRepositoryDB.address}`
+        );
+      }
+    }
 
     await this.startDBServices();
     await this.setupDbEvents();
@@ -128,13 +136,15 @@ export class ArticleRepository {
     console.log(`Database address: ${this.articleRepositoryDB.address}`);
   }
 
-  private async connectToProviders() {
+  private async connectToProviders(): Promise<boolean> {
     const cid = this.getDBAddressCID();
+    let providersFound = false;
+
     try {
-      // TODO: If no providers are found we should have a timeout to stop searching.
       let providers =
         await this.orbitdb.ipfs.libp2p.contentRouting.findProviders(cid);
       for await (const provider of providers) {
+        providersFound = true;
         console.log(`Connecting to provider: ${provider.id}`);
         try {
           await this.orbitdb.ipfs.libp2p.dial(provider.id);
@@ -147,6 +157,7 @@ export class ArticleRepository {
     } catch (error) {
       console.error("Error finding providers:", error);
     }
+    return providersFound;
   }
 
   private async startDBServices() {

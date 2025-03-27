@@ -23,6 +23,8 @@ export interface IpfsWikiNodeInit {
    * A collaborator is a node which helps with the availability and persistence of the wiki.
    * This means that the collaborator will replicate all the wiki's data, using its own storage.
    * Web browsers are not good candidates for collaborators, since they are not always online.
+   * If the node is not a collaborator it will fail to start if no providers are found.
+   * So a collaborator node is needed to create a new wiki.
    * By default the node is not a collaborator.
    */
   isCollaborator?: boolean;
