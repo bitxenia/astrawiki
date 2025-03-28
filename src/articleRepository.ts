@@ -7,7 +7,7 @@ import {
 } from "@orbitdb/core";
 import { CID } from "multiformats/cid";
 import { Article } from "./article.js";
-import { VersionID } from "./version.js";
+import { VersionID } from "wiki-version-manager";
 import { ArticleInfo } from "./index.js";
 
 export class ArticleRepository {

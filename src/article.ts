@@ -1,31 +1,29 @@
 import {
-  Version,
-  VersionID,
-  compileTextFromVersions,
-  createVersion,
-  getBranch,
-  getMainBranch,
-} from "./version.js";
-import {
   type OrbitDB,
   ComposedStorage,
   IPFSAccessController,
   IPFSBlockStorage,
   LRUStorage,
 } from "@orbitdb/core";
+import {
+  VersionManager,
+  compileTextFromVersions,
+  Version,
+  newVersion,
+} from "wiki-version-manager";
 
 export class Article {
   articleName: string;
   orbitdb: OrbitDB;
   articleDB: any;
   initialized: boolean | undefined;
-  versions: Map<VersionID, Version>;
+  versionManager: VersionManager;
 
   constructor(articleName: string, orbitdb: OrbitDB) {
     this.articleName = articleName;
     this.orbitdb = orbitdb;
     this.initialized = false;
-    this.versions = new Map();
+    this.versionManager = new VersionManager();
   }
 
   public async initNew(content: string) {
@@ -77,7 +75,7 @@ export class Article {
     // TODO: We should store the versions in a more efficient way.
     for await (const record of this.articleDB.iterator()) {
       let version = JSON.parse(record.value);
-      this.versions[version.id] = version;
+      this.versionManager.addVersion(version);
     }
     await this.setUpDbEvents();
     this.initialized = true;
@@ -86,9 +84,9 @@ export class Article {
   public getContent(articleVersionID?: string) {
     let branch: Version[] = [];
     if (articleVersionID) {
-      branch = getBranch(articleVersionID, this.versions);
+      branch = this.versionManager.getBranch(articleVersionID);
     } else {
-      branch = getMainBranch(this.versions);
+      branch = this.versionManager.getMainBranch();
     }
     // Returns the text until the last version and the ID of the last version
     return compileTextFromVersions(branch);
@@ -96,10 +94,10 @@ export class Article {
 
   public getVersions() {
     const mainBranch = new Set(
-      getMainBranch(this.versions).map((version) => version.id)
+      this.versionManager.getMainBranch().map((version) => version.id)
     );
 
-    return Array.from(this.versions.values()).map((version) => {
+    return this.versionManager.getAllVersions().map((version: Version) => {
       return {
         id: version.id,
         date: version.date,
@@ -110,26 +108,28 @@ export class Article {
   }
 
   public getCurrentVersionID() {
-    const mainBranch = getMainBranch(this.versions);
-    return mainBranch[-1].id;
+    const mainBranch = this.versionManager.getMainBranch();
+    if (mainBranch.length === 0) {
+      throw new Error("No versions found");
+    }
+    return mainBranch[mainBranch.length - 1].id;
   }
 
   public async newContent(content: string, articleParentVersionID?: string) {
-    let newVersion: Version;
+    let version: Version;
     if (!articleParentVersionID) {
       // It means this is the first version
-      newVersion = createVersion("", content, articleParentVersionID ?? null);
+      version = newVersion("", content, articleParentVersionID ?? null);
     } else {
-      const changesUntilVersion = getBranch(
-        articleParentVersionID,
-        this.versions
+      const changesUntilVersion = this.versionManager.getBranch(
+        articleParentVersionID
       );
       const oldText = compileTextFromVersions(changesUntilVersion);
-      newVersion = createVersion(oldText, content, articleParentVersionID);
+      version = newVersion(oldText, content, articleParentVersionID);
     }
 
-    this.versions[newVersion.id] = newVersion;
-    await this.articleDB.add(JSON.stringify(newVersion));
+    this.versionManager.addVersion(version);
+    await this.articleDB.add(JSON.stringify(version));
   }
 
   private async setUpDbEvents() {
