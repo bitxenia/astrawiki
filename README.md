@@ -16,7 +16,7 @@ npm install @bitxenia/ipfs-wiki-node
 ```
 
 ## Usage
-Using the `createIpfsWikiNode` function you can create and connect a node to a wiki.
+Using the `createIpfsWikiNode` init function you can create and connect a node to a wiki.
 ```ts
 import { createIpfsWikiNode } from "@bitxenia/ipfs-wiki-node";
 
@@ -50,13 +50,15 @@ Contributions welcome! Please check out the issues.
 
 ## Troubleshooting
 
-- The node cannot receive incoming connections and, as a result, cannot collaborate.
-  - This is most likely a port issue. The `LibP2P` implementation uses `UPnP` to automatically open ports and detect the public IP. If the modem is outdated, you will need to manually open the ports and specify the public IP in the `createIpfsWikiNode` function.
-  - The ports that need to be opened manually are:
-      - 4001
-      - 4002
-      - 4003
-  - If this does not work, your ISP may be using Double NAT, which prevents incoming connections. In this case, you may need to contact your ISP to request a solution.
+### The node cannot receive incoming connections and, as a result, cannot collaborate.
+If the node is set to collaborate and it fails to do so, the reason should most likely be a port issue. The `LibP2P` implementation uses `UPnP` to automatically open ports and detect the public IP. If the modem is outdated, you will need to manually open the ports and specify the public IP when creating the node in the `createIpfsWikiNode` init function.
+
+The ports that need to be opened manually are:
+- `4001` Used to receive `TCP` incoming connections.
+- `4002` Used to receive `WebSocket` incoming connections.
+- `4003` Used to receive `WebSocketSecure` upgraded by `autoTLS` incoming connections.
+
+If this does not work, your ISP may be using Double NAT, which prevents incoming connections. In this case, you may need to contact your ISP to request a solution.
 
 ## License
 MIT (LICENSE-MIT / http://opensource.org/licenses/MIT)
