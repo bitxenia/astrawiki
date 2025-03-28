@@ -1,6 +1,6 @@
 {
   "name": "@bitxenia/ipfs-wiki-node",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Decentralized p2p wiki on IPFS",
   "author": "Bitxenia",
   "license": "MIT",
@@ -44,8 +44,10 @@
     "@libp2p/websockets": "^9.2.8",
     "@libp2p/webtransport": "^5.0.37",
     "@orbitdb/core": "^2.5.0",
+    "blockstore-core": "^5.0.2",
     "blockstore-fs": "^2.0.2",
     "blockstore-level": "^2.0.1",
+    "datastore-core": "^10.0.2",
     "datastore-fs": "^10.0.2",
     "datastore-level": "^11.0.1",
     "helia": "^5.3.0",

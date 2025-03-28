@@ -3,6 +3,8 @@
  * @description Provides an interface for users to interact with IpfsWikiNode.
  */
 import { IpfsWikiNodeP2P } from "./ipfs-wiki-node.js";
+import type { Blockstore } from "interface-blockstore";
+import type { Datastore } from "interface-datastore";
 
 /**
  * Options used to create a IpfsWikiNode.
@@ -27,6 +29,30 @@ export interface IpfsWikiNodeInit {
    * The public ip of the node
    */
   publicIP?: string;
+
+  /**
+   * The datastore used by the node.
+   * By default the node will use a MemoryDatastore, which is a memory-based datastore.
+   * If you want to use a persistent datastore, you can pass a different datastore.
+   * For browser environments, you can use the LevelDatastore.
+   * For node environments, you can use the FsDatastore.
+   *
+   * A collaborator node should use a persistent datastore, since it will replicate the wiki's data.
+   * It will fail to start if the datastore is not persistent.
+   */
+  datastore?: Datastore;
+
+  /**
+   * The blockstore used by the node.
+   * By default the node will use a MemoryBlockstore, which is a memory-based blockstore.
+   * If you want to use a persistent blockstore, you can pass a different blockstore.
+   * For browser environments, you can use the LevelBlockstore.
+   * For node environments, you can use the FsBlockstore.
+   *
+   * A collaborator node should use a persistent blockstore, since it will replicate the wiki's data.
+   * It will fail to start if the blockstore is not persistent.
+   */
+  blockstore?: Blockstore;
 }
 
 /**

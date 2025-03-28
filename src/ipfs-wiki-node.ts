@@ -2,21 +2,41 @@ import { ArticleInfo, IpfsWikiNodeInit } from "./index.js";
 import { startOrbitDb } from "./utils/startOrbitdb.js";
 import { ArticleRepository } from "./articleRepository.js";
 import { IpfsWikiNode } from "./index.js";
+import { MemoryBlockstore } from "blockstore-core";
+import { MemoryDatastore } from "datastore-core";
+import type { Blockstore } from "interface-blockstore";
+import type { Datastore } from "interface-datastore";
 
 export class IpfsWikiNodeP2P implements IpfsWikiNode {
   wikiName: string;
   publicIP: string;
   isCollaborator: boolean;
   articleRepository: ArticleRepository;
+  datastore: Datastore;
+  blockstore: Blockstore;
 
   constructor(init: IpfsWikiNodeInit) {
     this.wikiName = init.wikiName ?? "bitxenia-wiki";
     this.publicIP = init.publicIP ?? "0.0.0.0";
     this.isCollaborator = init.isCollaborator ?? false;
+    this.datastore = init.datastore ?? new MemoryDatastore();
+    this.blockstore = init.blockstore ?? new MemoryBlockstore();
+
+    if (this.isCollaborator) {
+      if (!this.datastore || !this.blockstore) {
+        throw new Error(
+          "A collaborator node should use a persistent datastore and blockstore."
+        );
+      }
+    }
   }
 
   public async start(): Promise<void> {
-    const orbitdb = await startOrbitDb(this.publicIP);
+    const orbitdb = await startOrbitDb(
+      this.publicIP,
+      this.datastore,
+      this.blockstore
+    );
 
     console.log("Peer multiaddrs:");
     let multiaddrs = orbitdb.ipfs.libp2p.getMultiaddrs();
