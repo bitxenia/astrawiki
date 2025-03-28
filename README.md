@@ -1,63 +1,62 @@
-# IPFS Wiki Collab Node
+# IPFS Wiki Node
 
-El IPFS Wiki Collab Node es la implementación _backend_ para una wiki descentralizada en el ecosistema [IPFS](https://ipfs.tech). Haciendo uso de tecnologías como [OrbitDB](https://github.com/orbitdb/orbitdb) para la base de datos y [LibP2P](https://github.com/libp2p/js-libp2p) para la comunicación peer-to-peer entre colaboradores.
+The Bitxenia IPFS wiki node is an implementation of a client for a decentralized peer-to-peer wiki within the [IPFS](https://ipfs.tech) ecosystem. It leverages technologies such as [OrbitDB](https://github.com/orbitdb/orbitdb) for the database and [LibP2P](https://github.com/libp2p/js-libp2p) for peer-to-peer communication between collaborators. With this node, users can connect to an existing wiki or create their own.  
 
-La implementación se centra en lograr una alternativa descentralizada, distribuída y colaborativa a wikis existentes. Es por esto que son únicamente los nodos colaborativos los que se encargan de la disponibilidad y persistencia de la wiki.
+The implementation focuses on providing a decentralized, distributed, and collaborative alternative to existing wikis. For this reason, only the collaborative nodes are responsible for the availability and persistence of the wiki.  
 
-Para lograr una verdadera descentralización, todos los nodos que conforman la wiki tienen la misma responsabilidad y es muy fácil crear o mantener una wiki distinta a la provista por Bitxenia. Además, ninguna wiki depende de sus creadores.
+To achieve true decentralization, all nodes that make up the wiki share the same responsibilities, making it easy to create or maintain a wiki separate from the one provided by Bitxenia. Additionally, no wiki depends on its original creators.  
 
-Es necesario un cliente _frontend_ que siga el protocolo para poder visualizar la wiki. Desde bitxenia proveemos nuestro [cliente](https://github.com/bitxenia/rc).
+By using OrbitDB as a database, any user can create and edit articles in real-time.  
 
-## Instalación
+A *frontend* client can be built using the node to make the wiki more accessible. The node can be used locally or from a web application. At Bitxenia, we provide our own [web client](https://github.com/bitxenia/rc), but users are free to create their own if desired.
 
-Clonar y acceder al repositorio
+## Install
 ```
-git clone git@github.com:bitxenia/ipfs-wiki-collab-node.git
-```
-```
-cd ipfs-wiki-collab-node
+npm install @bitxenia/ipfs-wiki-node
 ```
 
-Instalar las dependencias
+## Usage
+Using the `createIpfsWikiNode` function you can create and connect a node to a wiki.
+```ts
+import { createIpfsWikiNode } from "@bitxenia/ipfs-wiki-node";
+
+const node = await createIpfsWikiNode({
+  wikiName: "bitxenia-wiki"
+});
+
+const articleList = await node.getArticleList()
+console.log(articleList);
 ```
-npm install
-```
-
-## Uso
-
-Correr el nodo
-```
-npm run start
-```
-
-## Uso personalizado
-
-El nodo trae por _default_ las configuraciones necesarias para colaborar con la wiki provista por bitxenia, las cuales se encuentran en `config.example.json`.
-
-Para configurar una instancia propia del nodo, por ejemeplo si se desea colaborar con otra instancia de wiki, es necesario modificar los ajustes que se encuentran en el `config.json`.
-Creado automáticamente del example en la primera corrida, puede crearse manualmente si se desea.
-
-Las configuraciones son las siguientes:
-
-- `wiki_name`
-  - Default: `bitxenia-wiki`
-  - El nombre de la wiki va a determinar a que wiki se va a unir el nodo colaborador. Es este setting el necesario para optar colaborar por otra wiki.
- 
-- `public_ip`
-  - Default: `0.0.0.0`
-  - Es posible indicar manualmente la ip pública del nodo si no puede encontrarse automáticamente por `libp2p`.
+Use the [Getting Started](https://github.com/bitxenia/ipfs-wiki-node/tree/main/docs/getting_started.md) guide for an initial introduction to the IPFS Wiki Node usage.
 
 ## Documentation
 
-Para entender como funciona la arquitectura de esta implementación, se pueden leer los docs que se encuentran en el repositorio.
+You can find more advanced topics in our [docs](https://github.com/bitxenia/ipfs-wiki-node/tree/main/docs).
 
-## Solución de problemas
+## Development
 
-- El nodo no puede conectarse
-  - Muy probablemente sea un problema de puertos. La implementación de `libp2p` usa `upnp` para abrir puertos automáticamente y encontrar la ip pública, si el modem utilizado es viejo entonces es necesario abrir los puertos manualmente e indicar la ip pública en el `config.json`.
-  - Los puertos a abrir manualmente son:
-  -   - 4001
+### Run Tests
+```
+npm run test
+```
+
+### Build
+```
+npm run build
+```
+
+## Contribute
+Contributions welcome! Please check out the issues.
+
+## Troubleshooting
+
+- The node cannot receive incoming connections and, as a result, cannot collaborate.
+  - This is most likely a port issue. The `LibP2P` implementation uses `UPnP` to automatically open ports and detect the public IP. If the modem is outdated, you will need to manually open the ports and specify the public IP in the `createIpfsWikiNode` function.
+  - The ports that need to be opened manually are:
+      - 4001
       - 4002
       - 4003
-   
-- - Si esto no funciona entonces probablemente tu ISP esté haciendo un _double nat_ con la conexión. Impidiendo que puedas recibir conexiones. Se puede contactar con el ISP para que le una solución.
+  - If this does not work, your ISP may be using Double NAT, which prevents incoming connections. In this case, you may need to contact your ISP to request a solution.
+
+## License
+MIT (LICENSE-MIT / http://opensource.org/licenses/MIT)
