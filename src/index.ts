@@ -1,15 +1,15 @@
 /**
- * @module IpfsWikiNode
- * @description Provides an interface for users to interact with IpfsWikiNode.
+ * @module Astrawiki
+ * @description Provides an interface for users to interact with Astrawiki.
  */
-import { IpfsWikiNodeP2P } from "./ipfs-wiki-node.js";
+import { AstrawikiNodeP2P } from "./astrawikiNode.js";
 import type { Blockstore } from "interface-blockstore";
 import type { Datastore } from "interface-datastore";
 
 /**
- * Options used to create a IpfsWikiNode.
+ * Options used to create an AstrawikiNode.
  */
-export interface IpfsWikiNodeInit {
+export interface AstrawikiNodeInit {
   /**
    * Wiki name is the wiki which the node connects to.
    * By default the node will connect to the Bitxenia wiki, which name is "bitxenia-wiki".
@@ -56,30 +56,30 @@ export interface IpfsWikiNodeInit {
 }
 
 /**
- * Creates an instance of IpfsWikiNode.
+ * Creates an instance of AstrawikiNode.
  *
  * By default the node will connect to the Bitxenia wiki, which name is "bitxenia-wiki", except another name is passed by parameter
  *
  * The node is started by default.
  *
- * @function createIpfsWikiNode
- * @param {IpfsWikiNodeInit} init Options used to create a IpfsWikiNode
+ * @function createAstrawikiNode
+ * @param {AstrawikiNodeInit} init Options used to create an AstrawikiNode
  * @instance
  */
-export async function createIpfsWikiNode(
-  init: IpfsWikiNodeInit = {}
-): Promise<IpfsWikiNodeP2P> {
-  const node = new IpfsWikiNodeP2P(init);
+export async function createAstrawikiNode(
+  init: AstrawikiNodeInit = {}
+): Promise<AstrawikiNodeP2P> {
+  const node = new AstrawikiNodeP2P(init);
   await node.start();
   return node;
 }
 
 /**
- * The API presented by a IpfsWikiNode node
+ * The API presented by an AstrawikiNode
  */
-export interface IpfsWikiNode {
+export interface AstrawikiNode {
   /**
-   * Starts the IpfsWikiNode node
+   * Starts the AstrawikiNode
    */
   start(): Promise<void>;
 
@@ -107,7 +107,7 @@ export interface IpfsWikiNode {
   getArticleList(): Promise<string[]>;
 
   /**
-   * Stops the IpfsWikiNode node
+   * Stops the AstrawikiNode
    */
   stop(): Promise<void>;
 }

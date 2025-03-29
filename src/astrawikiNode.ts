@@ -1,13 +1,16 @@
-import { ArticleInfo, IpfsWikiNodeInit } from "./index.js";
+import {
+  ArticleInfo,
+  AstrawikiNodeInit as AstrawikiNodeInit,
+} from "./index.js";
 import { startOrbitDb } from "./utils/startOrbitdb.js";
 import { ArticleRepository } from "./articleRepository.js";
-import { IpfsWikiNode } from "./index.js";
+import { AstrawikiNode as AstrawikiNode } from "./index.js";
 import { MemoryBlockstore } from "blockstore-core";
 import { MemoryDatastore } from "datastore-core";
 import type { Blockstore } from "interface-blockstore";
 import type { Datastore } from "interface-datastore";
 
-export class IpfsWikiNodeP2P implements IpfsWikiNode {
+export class AstrawikiNodeP2P implements AstrawikiNode {
   wikiName: string;
   publicIP: string;
   isCollaborator: boolean;
@@ -15,7 +18,7 @@ export class IpfsWikiNodeP2P implements IpfsWikiNode {
   datastore: Datastore;
   blockstore: Blockstore;
 
-  constructor(init: IpfsWikiNodeInit) {
+  constructor(init: AstrawikiNodeInit) {
     this.wikiName = init.wikiName ?? "bitxenia-wiki";
     this.publicIP = init.publicIP ?? "0.0.0.0";
     this.isCollaborator = init.isCollaborator ?? false;

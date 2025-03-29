@@ -1,12 +1,12 @@
 {
-  "name": "@bitxenia/ipfs-wiki-node",
-  "version": "0.0.2",
+  "name": "@bitxenia/astrawiki",
+  "version": "0.0.3",
   "description": "Decentralized p2p wiki on IPFS",
   "author": "Bitxenia",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bitxenia/ipfs-wiki-node"
+    "url": "https://github.com/bitxenia/astrawiki"
   },
   "engines": {
     "node": ">=20.0.0"
@@ -22,7 +22,7 @@
     "types": "./dist/types/index.d.ts"
   },
   "dependencies": {
-    "@chainsafe/libp2p-gossipsub": "^14.1.0",
+    "@chainsafe/libp2p-gossipsub": "^14.1.1",
     "@chainsafe/libp2p-noise": "^16.1.0",
     "@chainsafe/libp2p-yamux": "^7.0.1",
     "@constl/orbit-db-types": "^2.0.6",
