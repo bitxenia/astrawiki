@@ -112,15 +112,15 @@ export interface AstrawikiNode {
   stop(): Promise<void>;
 }
 
+export type ArticleInfo = {
+  name: string;
+  content: string;
+  versionsInfo: VersionInfo[];
+};
+
 export type VersionInfo = {
   id: string;
   date: string;
   parent: string | null;
   mainBranch: boolean;
-};
-
-export type ArticleInfo = {
-  name: string;
-  content: string;
-  versionsInfo: VersionInfo[];
 };
