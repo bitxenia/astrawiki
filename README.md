@@ -1,6 +1,6 @@
-# IPFS Wiki Node
+# Astrawiki
 
-The Bitxenia IPFS wiki node is an implementation of a client for a decentralized peer-to-peer wiki within the [IPFS](https://ipfs.tech) ecosystem. It leverages technologies such as [OrbitDB](https://github.com/orbitdb/orbitdb) for the database and [LibP2P](https://github.com/libp2p/js-libp2p) for peer-to-peer communication between collaborators. With this node, users can connect to an existing wiki or create their own.  
+The Bitxenia Astrawiki node is an implementation of a client for a decentralized peer-to-peer wiki within the [IPFS](https://ipfs.tech) ecosystem. It leverages technologies such as [OrbitDB](https://github.com/orbitdb/orbitdb) for the database and [LibP2P](https://github.com/libp2p/js-libp2p) for peer-to-peer communication between collaborators. With this node, users can connect to an existing wiki or create their own.  
 
 The implementation focuses on providing a decentralized, distributed, and collaborative alternative to existing wikis. For this reason, only the collaborative nodes are responsible for the availability and persistence of the wiki.  
 
@@ -12,28 +12,36 @@ A *frontend* client can be built using the node to make the wiki more accessible
 
 ## Install
 ```
-npm install @bitxenia/ipfs-wiki-node
+npm install @bitxenia/astrawiki
 ```
 
 ## Usage
-Using the `createIpfsWikiNode` init function you can create and connect a node to a wiki.
+Using the `createAstrawikiNode` init function you can create and connect a node to a wiki.
 ```ts
-import { createIpfsWikiNode } from "@bitxenia/ipfs-wiki-node";
+import { createAstrawikiNode } from "@bitxenia/astrawiki";
 
-const node = await createIpfsWikiNode({
+const node = await createAstrawikiNode({
   wikiName: "bitxenia-wiki"
 });
 
 const articleList = await node.getArticleList()
 console.log(articleList);
 ```
-Use the [Getting Started](https://github.com/bitxenia/ipfs-wiki-node/tree/main/docs/getting_started.md) guide for an initial introduction to the IPFS Wiki Node usage.
+Use the [Getting Started](https://github.com/bitxenia/astrawiki/tree/main/docs/getting_started.md) guide for an initial introduction to the IPFS Wiki Node usage.
 
 ## Documentation
 
-You can find more advanced topics in our [docs](https://github.com/bitxenia/ipfs-wiki-node/tree/main/docs).
+You can find more advanced topics in our [docs](https://github.com/bitxenia/astrawiki/tree/main/docs).
 
 ## Development
+
+**Clone and install dependencies:**
+
+```sh
+> git clone git@github.com:bitxenia/astrawiki.git
+> cd astrawiki
+> npm install
+```
 
 ### Run Tests
 ```
@@ -51,7 +59,7 @@ Contributions welcome! Please check out the issues.
 ## Troubleshooting
 
 ### The node cannot receive incoming connections and, as a result, cannot collaborate.
-If the node is set to collaborate and it fails to do so, the reason should most likely be a port issue. The `LibP2P` implementation uses `UPnP` to automatically open ports and detect the public IP. If the modem is outdated, you will need to manually open the ports and specify the public IP when creating the node in the `createIpfsWikiNode` init function.
+If the node is set to collaborate and it fails to do so, the reason should most likely be a port issue. The `LibP2P` implementation uses `UPnP` to automatically open ports and detect the public IP. If the modem is outdated, you will need to manually open the ports and specify the public IP when creating the node in the `createAstrawikiNode` init function.
 
 The ports that need to be opened manually are:
 - `4001` used to receive `TCP` incoming connections.
