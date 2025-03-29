@@ -46,7 +46,7 @@ Run index.js to connect your new Astrawiki node to the Bitxenia wiki:
 node index.js
 ```
 
-Congrats! After succesfully connecting, you should now see the list of all articles present in the wiki.
+Congrats! After succesfully connecting, you should see the list of all articles present in the wiki.
 
 ## Fetching an article
 
@@ -77,7 +77,7 @@ type ArticleInfo = {
 };
 ```
 
-Articles are store with a version history. The `versionsInfo` property contains an array of `VersionInfo` objects, which contain the following properties:
+Articles are stored with a version history. The `versionsInfo` property contains an array of `VersionInfo` objects, which contain the following properties:
 
 ```ts
 type VersionInfo = {
@@ -90,9 +90,11 @@ type VersionInfo = {
 
 Because we are using OrbitDB, articles are stored in a decentralized manner with eventual consistency, meaning that changes made to an article will eventually propagate to all peers in the wiki.
 
-Because of this, articles may have multiple branches of history if multiple peers are making changes to the same article at the same time.
+Because of this, articles may have multiple branches of history, if, for example, multiple peers are making changes to the same article at the same time.
 
-The `mainBranch` property indicates whether the version is part of the main branch of the article's history. The last version in the main branch is the most recent version of the article and its content is the one that will be returned when you call `getArticle`.
+The `mainBranch` property indicates whether the version is part of the main branch of the article's history. The last version in the main branch is the most recent version of the branch chosen to be the main, and its content is the one that will be returned when you call `getArticle`.
+
+To learn how the main branch is chosen you ca read the architecture docs.
 
 To get the content of a specific version of an article, you can use the `getArticle` method with the `articleVersionID` parameter. For example:
 
