@@ -27,7 +27,7 @@ const node = await createAstrawikiNode({
 const articleList = await node.getArticleList()
 console.log(articleList);
 ```
-Use the [Getting Started](https://github.com/bitxenia/astrawiki/tree/main/docs/getting_started.md) guide for an initial introduction to the Astrawiki Node usage.
+Use the [Getting Started](https://github.com/bitxenia/astrawiki/tree/main/docs/getting_started.md) guide for an initial introduction to the Astrawiki node usage.
 
 ## Documentation
 
