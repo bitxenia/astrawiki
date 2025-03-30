@@ -94,7 +94,7 @@ Because of this, articles may have multiple branches of history, if, for example
 
 The `mainBranch` property indicates whether the version is part of the main branch of the article's history. The last version in the main branch is the most recent version of the branch chosen to be the main, and its content is the one that will be returned when you call `getArticle`.
 
-To learn how the main branch is chosen you ca read the architecture docs.
+To learn how the main branch is chosen you can read the architecture docs.
 
 To get the content of a specific version of an article, you can use the `getArticle` method with the `articleVersionID` parameter. For example:
 
@@ -137,7 +137,7 @@ You should now see an error message, but don't worry, this is expected. The "Car
 
 If you want to create a new article, you can think of a cool thing that doesn't exist in the wiki yet.
 
-For the sake of this example, let's asume that the article "Carl Sagan" doesn't exist in the wiki. If we look again we can see me made a typo when writting the content, let's replace "Saggan" with "Sagan".
+For the sake of this example, let's asume that the article "Carl Sagan" doesn't exist in the wiki. If we look again we can see we made a typo when writting the content, let's replace "Saggan" with "Sagan".
 
 To edit an article, you can use the `editArticle` method. This method takes the article name and new content as arguments. For example:
 
