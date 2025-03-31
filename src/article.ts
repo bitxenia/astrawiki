@@ -10,7 +10,7 @@ import {
   compileTextFromVersions,
   Version,
   newVersion,
-} from "wiki-version-manager";
+} from "@bitxenia/wiki-version-manager";
 
 export class Article {
   articleName: string;
@@ -44,7 +44,7 @@ export class Article {
     // https://github.com/orbitdb/orbitdb/blob/d290032ebf1692feee1985853b2c54d376bbfc82/src/access-controllers/ipfs.js#L56
     const storage = await ComposedStorage(
       await LRUStorage({ size: 1000 }),
-      await IPFSBlockStorage({ ipfs: this.orbitdb.ipfs, pin: true })
+      await IPFSBlockStorage({ ipfs: this.orbitdb.ipfs, pin: true }),
     );
 
     const articleDb = await this.orbitdb.open(this.articleName, {
@@ -94,7 +94,7 @@ export class Article {
 
   public getVersions() {
     const mainBranch = new Set(
-      this.versionManager.getMainBranch().map((version) => version.id)
+      this.versionManager.getMainBranch().map((version) => version.id),
     );
 
     return this.versionManager.getAllVersions().map((version: Version) => {
@@ -122,7 +122,7 @@ export class Article {
       version = newVersion("", content, articleParentVersionID ?? null);
     } else {
       const changesUntilVersion = this.versionManager.getBranch(
-        articleParentVersionID
+        articleParentVersionID,
       );
       const oldText = compileTextFromVersions(changesUntilVersion);
       version = newVersion(oldText, content, articleParentVersionID);

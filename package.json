@@ -1,6 +1,6 @@
 {
   "name": "@bitxenia/astrawiki",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Decentralized p2p wiki on IPFS",
   "author": "Bitxenia",
   "license": "MIT",
@@ -11,17 +11,11 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "files": [
-    "dist"
-  ],
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/types/index.d.ts",
-  "exports": {
-    "import": "./dist/index.js",
-    "types": "./dist/types/index.d.ts"
-  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "dependencies": {
+    "@bitxenia/wiki-version-manager": "^0.1.2",
     "@chainsafe/libp2p-gossipsub": "^14.1.1",
     "@chainsafe/libp2p-noise": "^16.1.0",
     "@chainsafe/libp2p-yamux": "^7.0.1",
@@ -55,10 +49,12 @@
     "wiki-version-manager": "^0.1.0"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsup",
+    "prepublishOnly": "npm version patch --no-git-tag-version && npm run build"
   },
   "devDependencies": {
     "@types/diff-match-patch": "^1.0.36",
+    "tsup": "^8.4.0",
     "typescript": "^5.8.2"
   }
 }
