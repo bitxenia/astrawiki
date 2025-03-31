@@ -46,7 +46,7 @@ export class ArticleRepository {
       // If we are not a collaborator and no providers were found, we need to raise an error.
       // This is because a non collaborator node cannot create a new wiki.
       throw Error(
-        `No providers found for the database ${this.articleRepositoryDB.address}`,
+        `No providers found for the database ${this.articleRepositoryDB.address}`
       );
     }
     await this.syncAndReplicate();
@@ -57,7 +57,7 @@ export class ArticleRepository {
 
   public async getArticle(
     articleName: string,
-    articleVersionID?: string,
+    articleVersionID?: string
   ): Promise<ArticleInfo> {
     // Iterate over the records in the article repository database to find the article
 
@@ -74,7 +74,7 @@ export class ArticleRepository {
     // Update the last version fetched.
     this.lastVersionFetchedByArticle.set(
       articleName,
-      article.getCurrentVersionID(),
+      article.getCurrentVersionID()
     );
 
     const articleContent = article.getContent(articleVersionID);
@@ -100,7 +100,7 @@ export class ArticleRepository {
 
   public async editArticle(
     articleName: string,
-    newArticleContent: string,
+    newArticleContent: string
   ): Promise<void> {
     const articleAddress = this.articleAddressByName.get(articleName);
     if (!articleAddress) {
@@ -111,7 +111,7 @@ export class ArticleRepository {
       this.lastVersionFetchedByArticle.get(articleName);
     if (!lastVersionFetched) {
       throw Error(
-        `Article ${articleName} was not previously fetched. Fetched articles: ${this.lastVersionFetchedByArticle.keys()}`,
+        `Article ${articleName} was not previously fetched. Fetched articles: ${this.lastVersionFetchedByArticle.keys()}`
       );
     }
     const article = new Article(articleName, this.orbitdb);
@@ -129,7 +129,7 @@ export class ArticleRepository {
     // https://github.com/orbitdb/orbitdb/blob/d290032ebf1692feee1985853b2c54d376bbfc82/src/access-controllers/ipfs.js#L56
     const storage = await ComposedStorage(
       await LRUStorage({ size: 1000 }),
-      await IPFSBlockStorage({ ipfs: this.orbitdb.ipfs, pin: true }),
+      await IPFSBlockStorage({ ipfs: this.orbitdb.ipfs, pin: true })
     );
 
     // TODO: See if we need to search if the database exists first.
@@ -154,7 +154,7 @@ export class ArticleRepository {
           await this.orbitdb.ipfs.libp2p.dial(provider.id);
         } catch (error) {
           console.error(
-            `Error connecting to provider ${provider.id}: ${error}`,
+            `Error connecting to provider ${provider.id}: ${error}`
           );
         }
       }
@@ -208,7 +208,7 @@ export class ArticleRepository {
       console.log(
         `Database address provided, took ${
           (endTime - startTime) / 1000
-        } seconds`,
+        } seconds`
       );
     } catch (error) {
       console.error("Error providing database:", error);
@@ -258,7 +258,7 @@ export class ArticleRepository {
 
   private async replicateArticle(articleName: string, articleAddress: string) {
     console.log(
-      `New article received: name: ${articleName}, addr: ${articleAddress}. Replicating...`,
+      `New article received: name: ${articleName}, addr: ${articleAddress}. Replicating...`
     );
 
     // TODO: Maybe is it better to use voyager for replicating the individual articles db?
@@ -271,7 +271,7 @@ export class ArticleRepository {
       this.articlesReplicated.set(articleName, article);
     } catch (error) {
       console.error(
-        `Error replicating article ${articleName}, article not found: ${error}`,
+        `Error replicating article ${articleName}, article not found: ${error}`
       );
       return;
     }

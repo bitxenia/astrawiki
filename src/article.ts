@@ -43,7 +43,7 @@ export class Article {
     // https://github.com/orbitdb/orbitdb/blob/d290032ebf1692feee1985853b2c54d376bbfc82/src/access-controllers/ipfs.js#L56
     const storage = await ComposedStorage(
       await LRUStorage({ size: 1000 }),
-      await IPFSBlockStorage({ ipfs: this.orbitdb.ipfs, pin: true }),
+      await IPFSBlockStorage({ ipfs: this.orbitdb.ipfs, pin: true })
     );
 
     const articleDb = await this.orbitdb.open(this.articleName, {
@@ -57,7 +57,6 @@ export class Article {
     this.versionManager = new VersionManager();
     this.newContent(content);
 
-    await this.setUpDbEvents();
     this.initialized = true;
     return this.articleDB.address.toString();
   }
@@ -70,7 +69,8 @@ export class Article {
     //       This could be happening if the database existed but the peer was offline.
     this.articleDB = await this.orbitdb.open(articleAddress);
 
-    // TODO: Wait for replication to finish?
+    // Wait for replication to finish
+    await this.sync();
 
     // TODO: We should store the versions in a more efficient way.
     const versions: Version[] = [];
@@ -79,7 +79,6 @@ export class Article {
       versions.push(version);
     }
     this.versionManager = new VersionManager(versions);
-    await this.setUpDbEvents();
     this.initialized = true;
   }
 
@@ -96,7 +95,7 @@ export class Article {
 
   public getVersions() {
     const mainBranch = new Set(
-      this.versionManager.getMainBranch().map((version) => version.id),
+      this.versionManager.getMainBranch().map((version) => version.id)
     );
 
     return this.versionManager.getAllVersions().map((version: Version) => {
@@ -124,7 +123,7 @@ export class Article {
       version = newVersion("", content, articleParentVersionID ?? null);
     } else {
       const changesUntilVersion = this.versionManager.getBranch(
-        articleParentVersionID,
+        articleParentVersionID
       );
       const oldText = compileTextFromVersions(changesUntilVersion);
       version = newVersion(oldText, content, articleParentVersionID);
@@ -134,9 +133,37 @@ export class Article {
     await this.articleDB.add(JSON.stringify(version));
   }
 
-  private async setUpDbEvents() {
+  private async sync() {
+    if ((await this.articleDB.all()).length !== 0) {
+      console.log(
+        `Article ${this.articleName} already has entries. Skipping sync.`
+      );
+      return;
+    }
+
+    let replicated = false;
+    await this.waitFor(
+      () => replicated,
+      () => true
+    );
     this.articleDB.events.on("update", async (entry) => {
       console.log(`New entry for article ${this.articleName}`);
+      if (!replicated) {
+        replicated = true;
+        return;
+      }
+    });
+  }
+
+  private async waitFor(valueA, toBeValueB, pollInterval = 100) {
+    // TODO: Make this to not be a busy wait.
+    return new Promise<void>((resolve) => {
+      const interval = setInterval(async () => {
+        if ((await valueA()) === (await toBeValueB())) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, pollInterval);
     });
   }
 }
