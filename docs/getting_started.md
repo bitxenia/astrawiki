@@ -153,3 +153,8 @@ console.log("Article edited!");
 ```
 
 You should now see the article "Carl Sagan" created in the wiki with the new content.
+
+**PLEASE NOTE:**
+
+Changes made to the wiki and articles are not confirmed to be commited when the methods `createArticle` and `editArticle` return. This is because orbitdb is a decentralized and eventually consistent database, meaning that changes are first made locally and will eventually propagate to all colaborator peers.
+To learn more about this you can read the architecture docs.
