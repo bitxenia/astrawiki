@@ -28,7 +28,7 @@ export class AstrawikiNodeP2P implements AstrawikiNode {
     if (this.isCollaborator) {
       if (!this.datastore || !this.blockstore) {
         throw new Error(
-          "A collaborator node should use a persistent datastore and blockstore."
+          "A collaborator node should use a persistent datastore and blockstore.",
         );
       }
     }
@@ -38,7 +38,7 @@ export class AstrawikiNodeP2P implements AstrawikiNode {
     const orbitdb = await startOrbitDb(
       this.publicIP,
       this.datastore,
-      this.blockstore
+      this.blockstore,
     );
 
     console.log("Peer multiaddrs:");
@@ -63,19 +63,19 @@ export class AstrawikiNodeP2P implements AstrawikiNode {
     this.articleRepository = new ArticleRepository(
       orbitdb,
       this.wikiName,
-      this.isCollaborator
+      this.isCollaborator,
     );
     await this.articleRepository.init();
   }
 
   public async getArticle(
     articleName: string,
-    articleVersionID?: string
+    articleVersionID?: string,
   ): Promise<ArticleInfo> {
     console.log(`Fetching article ${articleName}`);
     const article = await this.articleRepository.getArticle(
       articleName,
-      articleVersionID
+      articleVersionID,
     );
     console.log(`Article ${articleName} fetched`);
     return article;
@@ -83,14 +83,14 @@ export class AstrawikiNodeP2P implements AstrawikiNode {
 
   public async newArticle(
     articleName: string,
-    articleContent: string
+    articleContent: string,
   ): Promise<void> {
     await this.articleRepository.newArticle(articleName, articleContent);
   }
 
   public async editArticle(
     articleName: string,
-    newArticleContent: string
+    newArticleContent: string,
   ): Promise<void> {
     await this.articleRepository.editArticle(articleName, newArticleContent);
   }

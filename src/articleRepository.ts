@@ -72,8 +72,10 @@ export class ArticleRepository {
     await article.initExisting(articleAddress);
 
     // Update the last version fetched.
-    this.lastVersionFetchedByArticle[articleName] =
-      article.getCurrentVersionID();
+    this.lastVersionFetchedByArticle.set(
+      articleName,
+      article.getCurrentVersionID(),
+    );
 
     const articleContent = article.getContent(articleVersionID);
     const articleVersions = article.getVersions();
@@ -108,7 +110,9 @@ export class ArticleRepository {
     const lastVersionFetched =
       this.lastVersionFetchedByArticle.get(articleName);
     if (!lastVersionFetched) {
-      throw Error(`Article ${articleName} was not previously fetched`);
+      throw Error(
+        `Article ${articleName} was not previously fetched. Fetched articles: ${this.lastVersionFetchedByArticle.keys()}`,
+      );
     }
     const article = new Article(articleName, this.orbitdb);
     await article.initExisting(articleAddress);

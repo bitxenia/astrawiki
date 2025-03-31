@@ -23,7 +23,6 @@ export class Article {
     this.articleName = articleName;
     this.orbitdb = orbitdb;
     this.initialized = false;
-    this.versionManager = new VersionManager();
   }
 
   public async initNew(content: string) {
@@ -55,6 +54,7 @@ export class Article {
     });
     this.articleDB = articleDb;
 
+    this.versionManager = new VersionManager();
     this.newContent(content);
 
     await this.setUpDbEvents();
@@ -73,10 +73,12 @@ export class Article {
     // TODO: Wait for replication to finish?
 
     // TODO: We should store the versions in a more efficient way.
+    const versions: Version[] = [];
     for await (const record of this.articleDB.iterator()) {
       let version = JSON.parse(record.value);
-      this.versionManager.addVersion(version);
+      versions.push(version);
     }
+    this.versionManager = new VersionManager(versions);
     await this.setUpDbEvents();
     this.initialized = true;
   }
