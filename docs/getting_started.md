@@ -157,4 +157,25 @@ You should now see the article "Carl Sagan" created in the wiki with the new con
 **PLEASE NOTE:**
 
 Changes made to the wiki and articles are not confirmed to be commited when the methods `createArticle` and `editArticle` return. This is because orbitdb is a decentralized and eventually consistent database, meaning that changes are first made locally and will eventually propagate to all colaborator peers.
-To learn more about this you can read the architecture docs.
+You can learn more about this in the architecture docs.
+
+## Colaborating to a wiki
+
+Astrawiki's power lies in its ability to delegate the hosting responsability to colaborators.
+
+Instead of paying for a centralized third party service to host the wiki, colaborators are responsable of the wiki's persistency & availability.
+
+Colaborator peers will replicate all the wiki's data. And if no colaborators are online at a certain time the wiki will not be accessible.
+
+<Talk about persistent storage>
+
+To colaborate to a wiki you will need to create the node with the flag `isColaborrator` to `True`:
+
+```ts
+const node = await createAstrawikiNode({
+  wikiName: "bitxenia-wiki",
+  isColaborator: True,
+});
+console.log("Colaborating to bitxenia's wiki!");
+```
+
