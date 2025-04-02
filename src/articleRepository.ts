@@ -1,13 +1,14 @@
 import { Article } from "./article.js";
 import { VersionID } from "@bitxenia/wiki-version-manager";
 import { ArticleInfo } from "./index.js";
+import { ArticleRepositoryDatabase } from "./database.js";
+import { type OrbitDB } from "@orbitdb/core";
 
 export class ArticleRepository {
   orbitdb: OrbitDB;
   wikiName: string;
   isCollaborator: boolean;
-  articleRepositoryDB: any;
-  initialized: boolean | undefined;
+  articleRepositoryDB: ArticleRepositoryDatabase;
   articleAddressByName: Map<string, string>;
   lastVersionFetchedByArticle: Map<string, VersionID>;
   articlesReplicated: Map<string, Article>;
@@ -16,35 +17,22 @@ export class ArticleRepository {
     this.orbitdb = orbitdb;
     this.wikiName = wikiName;
     this.isCollaborator = isCollaborator;
-    this.initialized = false;
     this.articleAddressByName = new Map();
     this.lastVersionFetchedByArticle = new Map();
     this.articlesReplicated = new Map();
   }
 
   public async init() {
-    if (this.initialized) {
-      return;
-    }
-    this.initialized = true;
+    this.articleRepositoryDB = new ArticleRepositoryDatabase();
+    await this.articleRepositoryDB.init(
+      this.orbitdb,
+      this.wikiName,
+      this.isCollaborator
+    );
 
-    // Since the db address should never change, we can always create the database instead of opening it, and then
-    // use the address to look for providers and synchronize it.
-    await this.createArticleRepositoryDB();
-
-    // If the wiki already exists, we sync the database with the providers.
-    const providersFound = await this.connectToProviders();
-    if (!this.isCollaborator && !providersFound) {
-      // If we are not a collaborator and no providers were found, we need to raise an error.
-      // This is because a non collaborator node cannot create a new wiki.
-      throw Error(
-        `No providers found for the database ${this.articleRepositoryDB.address}`
-      );
-    }
-    await this.syncAndReplicate();
+    await this.ArticleListUpdate();
 
     await this.startDBServices();
-    await this.setupDbEvents();
   }
 
   public async getArticle(
@@ -177,11 +165,26 @@ export class ArticleRepository {
 
   private async startDBServices() {
     // Servicies are long running tasks, we don't need to await them
-    this.startConnectToProvidersService();
+    this.startArticleListUpdateService();
 
     if (this.isCollaborator) {
       this.startSyncAndReplicateService();
       this.startProvideDBService();
+    }
+  }
+
+  private async ArticleListUpdate() {}
+
+  private async startService(serviceFunction: () => Promise<void>) {
+    // TODO: Find a better way to handle the service function. it should be stoppable.
+    while (true) {
+      try {
+        await serviceFunction();
+      } catch (error) {
+        console.error("Error in service function:", error);
+      }
+      // Wait 60 seconds before running the service function again
+      await new Promise((resolve) => setTimeout(resolve, 60000));
     }
   }
 
