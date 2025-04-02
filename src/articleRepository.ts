@@ -1,11 +1,3 @@
-import {
-  type OrbitDB,
-  ComposedStorage,
-  IPFSAccessController,
-  IPFSBlockStorage,
-  LRUStorage,
-} from "@orbitdb/core";
-import { CID } from "multiformats/cid";
 import { Article } from "./article.js";
 import { VersionID } from "@bitxenia/wiki-version-manager";
 import { ArticleInfo } from "./index.js";
