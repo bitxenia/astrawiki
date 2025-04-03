@@ -10,6 +10,10 @@ export class Database {
   orbitdb: OrbitDB;
   openDb: any;
 
+  constructor(orbitdb: OrbitDB) {
+    this.orbitdb = orbitdb;
+  }
+
   public async createDatabase(dbName: string) {
     // We use the default storage, found in:
     // https://github.com/orbitdb/orbitdb/blob/d290032ebf1692feee1985853b2c54d376bbfc82/src/access-controllers/ipfs.js#L56

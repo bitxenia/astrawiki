@@ -9,9 +9,9 @@ import type { Blockstore } from "interface-blockstore";
 import type { Datastore } from "interface-datastore";
 
 export const startOrbitDb = async (
-  publicIP: string,
   datastore: Datastore,
-  blockstore: Blockstore
+  blockstore: Blockstore,
+  publicIP: string
 ) => {
   const isBrowser = typeof window !== "undefined";
   if (isBrowser) {
@@ -46,6 +46,25 @@ export const startOrbitDb = async (
   console.log(`Node started with id: ${helia.libp2p.peerId.toString()}`);
 
   const orbitdb = await createOrbitDB({ ipfs: helia });
+
+  console.log("Peer multiaddrs:");
+  let multiaddrs = orbitdb.ipfs.libp2p.getMultiaddrs();
+  for (const ma of multiaddrs) {
+    console.log(`${ma}`);
+  }
+
+  // Log the peer's multiaddrs whenever they change
+  let oldAddrs = new Map();
+  orbitdb.ipfs.libp2p.addEventListener("self:peer:update", (evt) => {
+    const newAddrs = orbitdb.ipfs.libp2p.getMultiaddrs();
+    if (JSON.stringify(oldAddrs) !== JSON.stringify(newAddrs)) {
+      console.log("Peer multiaddrs changed:");
+      for (const ma of newAddrs) {
+        console.log(`${ma}`);
+      }
+      oldAddrs = newAddrs;
+    }
+  });
 
   return orbitdb;
 };

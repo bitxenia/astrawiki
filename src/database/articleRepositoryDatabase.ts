@@ -11,17 +11,16 @@ export class ArticleRepositoryDatabase extends Database {
   articleDBs: Map<string, ArticleDatabase>;
   dbAddressCID: CID;
 
-  public async init(
-    orbitdb: OrbitDB,
-    wikiName: string,
-    isCollaborator: boolean
-  ) {
-    this.orbitdb = orbitdb;
+  constructor(orbitdb: OrbitDB, wikiName: string, isCollaborator: boolean) {
+    super(orbitdb);
     this.wikiName = wikiName;
     this.isCollaborator = isCollaborator;
     this.articleNames = new Set();
     this.articleDBs = new Map();
-    this.openDb = await this.createDatabase(wikiName);
+  }
+
+  public async init() {
+    this.openDb = await this.createDatabase(this.wikiName);
     console.log(
       `Article repository database created with address ${this.openDb.address}`
     );
@@ -36,7 +35,7 @@ export class ArticleRepositoryDatabase extends Database {
     // TODO: Maybe add a flag to know if the database is new and we should not sync.
     const synced = await this.syncDb();
 
-    if (!isCollaborator && !synced) {
+    if (!this.isCollaborator && !synced) {
       // If we are not a collaborator and no providers were found, we need to raise an error.
       // This is because a non collaborator node cannot create a new wiki.
       throw Error(`No providers found for the database ${this.openDb.address}`);
@@ -49,7 +48,7 @@ export class ArticleRepositoryDatabase extends Database {
     this.startService(async () => {
       await this.updateDB();
     });
-    if (isCollaborator) {
+    if (this.isCollaborator) {
       // We only provide the database if we are a collaborator.
       this.startService(async () => {
         await this.provideDB();
@@ -73,8 +72,8 @@ export class ArticleRepositoryDatabase extends Database {
       articleDB = this.articleDBs.get(articleName);
     } else {
       // Else, we need to open the articleDB.
-      articleDB = new ArticleDatabase();
-      await articleDB.initExisting(this.orbitdb, this.wikiName, articleName);
+      articleDB = new ArticleDatabase(this.orbitdb, this.wikiName, articleName);
+      await articleDB.initExisting();
     }
     const articleVersions = await articleDB.getVersions();
     const article = new Article(articleName, articleDB, articleVersions);
@@ -98,8 +97,12 @@ export class ArticleRepositoryDatabase extends Database {
       throw new Error(`Article ${articleName} already exists`);
     }
 
-    const articleDB = new ArticleDatabase();
-    await articleDB.initNew(this.orbitdb, this.wikiName, articleName);
+    const articleDB = new ArticleDatabase(
+      this.orbitdb,
+      this.wikiName,
+      articleName
+    );
+    await articleDB.initNew();
     const article = new Article(articleName, articleDB, []);
     await article.newContent(articleContent);
 
@@ -192,8 +195,12 @@ export class ArticleRepositoryDatabase extends Database {
     this.articleNames.add(articleName);
     // If we are a collaborator, replicate the article by keeping the articleDB open.
     if (this.isCollaborator) {
-      const articleDb = new ArticleDatabase();
-      await articleDb.initExisting(this.orbitdb, this.wikiName, articleName);
+      const articleDb = new ArticleDatabase(
+        this.orbitdb,
+        this.wikiName,
+        articleName
+      );
+      await articleDb.initExisting();
       this.articleDBs.set(articleName, articleDb);
       console.log(`Article ${articleName} replicated.`);
     }

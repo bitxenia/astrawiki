@@ -4,26 +4,20 @@ import { ArticleRepositoryDatabase } from "./database/articleRepositoryDatabase.
 import { type OrbitDB } from "@orbitdb/core";
 
 export class ArticleRepository {
-  orbitdb: OrbitDB;
-  wikiName: string;
-  isCollaborator: boolean;
   articleRepositoryDB: ArticleRepositoryDatabase;
   lastVersionFetchedByArticle: Map<string, VersionID>;
 
   constructor(orbitdb: OrbitDB, wikiName: string, isCollaborator: boolean) {
-    this.orbitdb = orbitdb;
-    this.wikiName = wikiName;
-    this.isCollaborator = isCollaborator;
-    this.articleRepositoryDB = new ArticleRepositoryDatabase();
+    this.articleRepositoryDB = new ArticleRepositoryDatabase(
+      orbitdb,
+      wikiName,
+      isCollaborator
+    );
     this.lastVersionFetchedByArticle = new Map();
   }
 
   public async init() {
-    await this.articleRepositoryDB.init(
-      this.orbitdb,
-      this.wikiName,
-      this.isCollaborator
-    );
+    await this.articleRepositoryDB.init();
   }
 
   public async getArticle(

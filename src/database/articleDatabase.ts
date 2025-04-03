@@ -6,30 +6,26 @@ export class ArticleDatabase extends Database {
   wikiName: string;
   articleName: string;
 
-  private async init(orbitdb: OrbitDB, wikiName: string, articleName: string) {
-    this.orbitdb = orbitdb;
+  constructor(orbitdb: OrbitDB, wikiName: string, articleName: string) {
+    super(orbitdb);
     this.wikiName = wikiName;
     this.articleName = articleName;
+  }
 
+  private async init() {
     // TODO: Find a better protocol to name the article, current protocol:
     // "<wiki-name>::<article-name>"
-    this.openDb = await this.createDatabase(`${wikiName}::${articleName}`);
+    this.openDb = await this.createDatabase(
+      `${this.wikiName}::${this.articleName}`
+    );
   }
 
-  public async initNew(
-    orbitdb: OrbitDB,
-    wikiName: string,
-    articleName: string
-  ) {
-    await this.init(orbitdb, wikiName, articleName);
+  public async initNew() {
+    await this.init();
   }
 
-  public async initExisting(
-    orbitdb: OrbitDB,
-    wikiName: string,
-    articleName: string
-  ) {
-    await this.init(orbitdb, wikiName, articleName);
+  public async initExisting() {
+    await this.init();
     await this.syncDb();
   }
 
