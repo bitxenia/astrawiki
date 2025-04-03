@@ -54,7 +54,7 @@ export const startOrbitDb = async (
   }
 
   // Log the peer's multiaddrs whenever they change
-  let oldAddrs = new Map();
+  let oldAddrs = [];
   orbitdb.ipfs.libp2p.addEventListener("self:peer:update", (evt) => {
     const newAddrs = orbitdb.ipfs.libp2p.getMultiaddrs();
     if (JSON.stringify(oldAddrs) !== JSON.stringify(newAddrs)) {

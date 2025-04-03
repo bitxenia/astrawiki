@@ -67,7 +67,7 @@ export class ArticleRepositoryDatabase extends Database {
       // If we are a collaborator, or we already opened/created the article, we should already have the articleDB open.
 
       // TODO: This could cause a race condition if the article was just created.
-      // Becuse we could not have the articleDB open yet in the updateDB function.
+      // Because we could not have the articleDB open yet in the updateDB function.
       // And creating a new one could also cause problems. Check this.
       articleDB = this.articleDBs.get(articleName);
     } else {
