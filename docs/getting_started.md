@@ -161,21 +161,69 @@ You can learn more about this in the architecture docs.
 
 ## Colaborating to a wiki
 
-Astrawiki's power lies in its ability to delegate the hosting responsability to colaborators.
+Astrawiki's power lies in its ability to delegate the hosting responsability to colaborators. Instead of paying for a centralized third party service to host the wiki, the people that use the wiki can help hosting it themselves. This also means that the wiki is not dependent on a single server or database, and is instead distributed across multiple peers. This colaborators are responsable of the wiki's persistency & availability.
 
-Instead of paying for a centralized third party service to host the wiki, colaborators are responsable of the wiki's persistency & availability.
+Colaborator peers will replicate all the wiki's data. And if no colaborators are online at a certain time the wiki will not be accessible. That's why it's important to have multiple colaborators for a wiki, with more colaborators the wiki will be more available and persistent and less likely to go offline.
 
-Colaborator peers will replicate all the wiki's data. And if no colaborators are online at a certain time the wiki will not be accessible.
+This is a very important concept to understand, as it is the main difference between Astrawiki and other wikis. In Astrawiki, you are not just a user, you can also be a colaborator.
 
-<Talk about persistent storage>
+### Persistent storage
 
-To colaborate to a wiki you will need to create the node with the flag `isColaborrator` to `True`:
+Out of the box Astrawiki will store all data in-memory. This makes it easy to get started, and to create short-lived nodes that do not persist state between restarts, but what if you want to collaborate and store large amounts of data for long amounts of time?
+
+To collaborate to a wiki you will need to use a persistent storage. This storages are a `Datastore` & `Blockstore`. You can use any of the storages supported by OrbitDB.
+
+There are many storage implementations available. Some common ones are:
+
+- [datastore-fs](https://www.npmjs.com/package/datastore-fs) & [blockstore-fs](https://www.npmjs.com/package/blockstore-fs) - store in a directory on the filesystem using Node.js
+- [datastore-level](https://www.npmjs.com/package/datastore-level) & [blockstore-level](https://www.npmjs.com/package/blockstore-level) - store key/value pairs in a [LevelDB](https://github.com/google/leveldb) instance. That works in the browser.
+
+To use a persistent storage, you will need to pass the `datastore` and `blockstore` options to the `createAstrawikiNode` method.
+
+To colaborate to a wiki, you can use the `createAstrawikiNode` method with the `isColaborator` flag set to `True`. For example, to colaborate to the Bitxenia wiki you would use the following code:
 
 ```ts
+import { createAstrawikiNode } from "@bitxenia/astrawiki";
+import { FsBlockstore } from "blockstore-fs";
+import { FsDatastore } from "datastore-fs";
+
+blockstore = new FsBlockstore("./data/ipfs/block-store");
+datastore = new FsDatastore("./data/ipfs/data-store");
+
 const node = await createAstrawikiNode({
   wikiName: "bitxenia-wiki",
-  isColaborator: True,
+  isCollaborator: true,
+  datastore: datastore,
+  blockstore: blockstore,
 });
 console.log("Colaborating to bitxenia's wiki!");
 ```
 
+Now you are colaborating to the wiki! You can create and edit articles as you did before, and your changes will be replicated to all other colaborators.
+
+Colaborators are meant to be online and available to serve the wiki to other peers. That is why browser nodes should not be used as colaborators, as they are not always online. If you want to use Astrawiki in the browser, you should use it as a normal node, and not as a colaborator.
+
+## Creating a new wiki
+
+Until now we have been connecting to the same existing wiki, the bitnexia wiki. But what if you want to create your own wiki, with its own name and articles?
+
+To create a new wiki, you can simply use the `createAstrawikiNode` method with a new wiki name. It is important to note that if the wiki name already exists, you will be connected to the existing wiki. So make sure to choose a unique name for your wiki. Only a collaborator node can create a new wiki.
+
+For example, to create a new wiki called "my-wiki" you would use the following code:
+
+```ts
+import { createAstrawikiNode } from "@bitxenia/astrawiki";
+import { FsBlockstore } from "blockstore-fs";
+import { FsDatastore } from "datastore-fs";
+
+const blockstore = new FsBlockstore("./data/ipfs/block-store");
+const datastore = new FsDatastore("./data/ipfs/data-store");
+
+const node = await createAstrawikiNode({
+  wikiName: "my-wiki",
+  isCollaborator: true,
+  datastore: datastore,
+  blockstore: blockstore,
+});
+console.log("New wiki created!");
+```
