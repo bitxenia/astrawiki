@@ -1,6 +1,6 @@
 {
   "name": "@bitxenia/astrawiki",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Decentralized p2p wiki on IPFS",
   "author": "Bitxenia",
   "license": "MIT",
@@ -11,6 +11,7 @@
   "engines": {
     "node": ">=20.0.0"
   },
+  "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -29,6 +30,7 @@
     "@libp2p/identify": "^3.0.27",
     "@libp2p/kad-dht": "^14.2.15",
     "@libp2p/keychain": "^5.1.4",
+    "@libp2p/mdns": "^11.0.32",
     "@libp2p/ping": "^2.0.27",
     "@libp2p/pubsub-peer-discovery": "^11.0.1",
     "@libp2p/tcp": "^10.1.8",

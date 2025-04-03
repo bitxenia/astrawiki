@@ -1,85 +1,24 @@
 import {
-  type OrbitDB,
-  ComposedStorage,
-  IPFSAccessController,
-  IPFSBlockStorage,
-  LRUStorage,
-} from "@orbitdb/core";
-import {
   VersionManager,
   compileTextFromVersions,
   Version,
   newVersion,
 } from "@bitxenia/wiki-version-manager";
+import { ArticleDatabase } from "./database/articleDatabase.js";
 
 export class Article {
   articleName: string;
-  orbitdb: OrbitDB;
-  articleDB: any;
-  initialized: boolean | undefined;
+  articleDB: ArticleDatabase;
   versionManager: VersionManager;
 
-  constructor(articleName: string, orbitdb: OrbitDB) {
+  constructor(
+    articleName: string,
+    articleDB: ArticleDatabase,
+    versions: Version[]
+  ) {
     this.articleName = articleName;
-    this.orbitdb = orbitdb;
-    this.initialized = false;
-  }
-
-  public async initNew(content: string) {
-    if (this.initialized) {
-      return;
-    }
-
-    // Create the article database
-
-    // TODO: The new database needs to stay accessible for the collaborators to replicate it.
-    //       See how to achieve this or change the responsibility of creating the database to
-    //       the collaborators nodes.
-    //       Every change is made without confirmation that it was replicated to the collaborators.
-    //       One way to mitigate this is to obligate to be connected to at least one provider.
-    //       Blocking the creating and editing of articles if not connected to a provider.
-
-    // We use the default storage, found in:
-    // https://github.com/orbitdb/orbitdb/blob/d290032ebf1692feee1985853b2c54d376bbfc82/src/access-controllers/ipfs.js#L56
-    const storage = await ComposedStorage(
-      await LRUStorage({ size: 1000 }),
-      await IPFSBlockStorage({ ipfs: this.orbitdb.ipfs, pin: true })
-    );
-
-    const articleDb = await this.orbitdb.open(this.articleName, {
-      AccessController: IPFSAccessController({
-        write: ["*"],
-        storage,
-      }),
-    });
-    this.articleDB = articleDb;
-
-    this.versionManager = new VersionManager();
-    this.newContent(content);
-
-    this.initialized = true;
-    return this.articleDB.address.toString();
-  }
-
-  public async initExisting(articleAddress: string) {
-    if (this.initialized) {
-      return;
-    }
-    // TODO: Handle the case where the database doesn't exist.
-    //       This could be happening if the database existed but the peer was offline.
-    this.articleDB = await this.orbitdb.open(articleAddress);
-
-    // Wait for replication to finish
-    await this.sync();
-
-    // TODO: We should store the versions in a more efficient way.
-    const versions: Version[] = [];
-    for await (const record of this.articleDB.iterator()) {
-      let version = JSON.parse(record.value);
-      versions.push(version);
-    }
+    this.articleDB = articleDB;
     this.versionManager = new VersionManager(versions);
-    this.initialized = true;
   }
 
   public getContent(articleVersionID?: string) {
@@ -130,40 +69,6 @@ export class Article {
     }
 
     this.versionManager.addVersion(version);
-    await this.articleDB.add(JSON.stringify(version));
-  }
-
-  private async sync() {
-    if ((await this.articleDB.all()).length !== 0) {
-      console.log(
-        `Article ${this.articleName} already has entries. Skipping sync.`
-      );
-      return;
-    }
-
-    let replicated = false;
-    await this.waitFor(
-      () => replicated,
-      () => true
-    );
-    this.articleDB.events.on("update", async (entry) => {
-      console.log(`New entry for article ${this.articleName}`);
-      if (!replicated) {
-        replicated = true;
-        return;
-      }
-    });
-  }
-
-  private async waitFor(valueA, toBeValueB, pollInterval = 100) {
-    // TODO: Make this to not be a busy wait.
-    return new Promise<void>((resolve) => {
-      const interval = setInterval(async () => {
-        if ((await valueA()) === (await toBeValueB())) {
-          clearInterval(interval);
-          resolve();
-        }
-      }, pollInterval);
-    });
+    await this.articleDB.addVersion(version);
   }
 }

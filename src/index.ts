@@ -5,6 +5,8 @@
 import { AstrawikiNodeP2P } from "./astrawikiNode.js";
 import type { Blockstore } from "interface-blockstore";
 import type { Datastore } from "interface-datastore";
+import { MemoryBlockstore } from "blockstore-core";
+import { MemoryDatastore } from "datastore-core";
 
 /**
  * Options used to create an AstrawikiNode.
@@ -24,11 +26,6 @@ export interface AstrawikiNodeInit {
    * By default the node is not a collaborator.
    */
   isCollaborator?: boolean;
-
-  /**
-   * The public ip of the node
-   */
-  publicIP?: string;
 
   /**
    * The datastore used by the node.
@@ -53,6 +50,11 @@ export interface AstrawikiNodeInit {
    * It will fail to start if the blockstore is not persistent.
    */
   blockstore?: Blockstore;
+
+  /**
+   * The public ip of the node
+   */
+  publicIP?: string;
 }
 
 /**
@@ -69,8 +71,15 @@ export interface AstrawikiNodeInit {
 export async function createAstrawikiNode(
   init: AstrawikiNodeInit = {}
 ): Promise<AstrawikiNodeP2P> {
-  const node = new AstrawikiNodeP2P(init);
-  await node.start();
+  // Set default values for the parameters if not provided
+  const wikiname = init.wikiName ?? "bitxenia-wiki";
+  const isCollaborator = init.isCollaborator ?? false;
+  const datastore = init.datastore ?? new MemoryDatastore();
+  const blockstore = init.blockstore ?? new MemoryBlockstore();
+  const publicIP = init.publicIP ?? "0.0.0.0";
+
+  const node = new AstrawikiNodeP2P();
+  await node.start(wikiname, isCollaborator, datastore, blockstore, publicIP);
   return node;
 }
 
@@ -78,11 +87,6 @@ export async function createAstrawikiNode(
  * The API presented by an AstrawikiNode
  */
 export interface AstrawikiNode {
-  /**
-   * Starts the AstrawikiNode
-   */
-  start(): Promise<void>;
-
   /**
    * Gets an existing article
    */
@@ -105,11 +109,6 @@ export interface AstrawikiNode {
    * Gets the list of articles in the wiki
    */
   getArticleList(): Promise<string[]>;
-
-  /**
-   * Stops the AstrawikiNode
-   */
-  stop(): Promise<void>;
 }
 
 export type ArticleInfo = {
