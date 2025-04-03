@@ -227,3 +227,11 @@ const node = await createAstrawikiNode({
 });
 console.log("New wiki created!");
 ```
+
+You should now see a new wiki created with the name "my-wiki". You can now create and edit articles in this wiki as you did before.
+
+You should take into account that right now you are the only colaborator of this wiki. This means that if you go offline, the wiki will not be available to other peers. To make the wiki available, other peers need to colaborate to it. You can tell your friends to colaborate to your wiki and help you host it!
+
+## Further Reading
+
+This guide was meant to get you started with Astrawiki. If you want to learn more about how Astrawiki works, its architecture, and how to implement it to a frontend application, you can read more in the [docs folder](https://github.com/bitxenia/astrawiki/tree/main/docs).
