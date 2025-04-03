@@ -66,7 +66,7 @@ export class Database {
     valueA: any,
     toBeValueB: any,
     pollInterval = 100,
-    timeout = 60000
+    timeout = 10000 // 10 seconds | TODO: see if this is enough
   ): Promise<void> {
     // TODO: We use this slight modifided busy wait found in the OrbitDB codebase:
     // https://github.com/orbitdb/orbitdb/blob/main/test/utils/wait-for.js
