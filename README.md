@@ -8,7 +8,7 @@ To achieve true decentralization, all nodes that make up the wiki share the same
 
 By using OrbitDB as a database, any user can create and edit articles in real-time.
 
-A _frontend_ client can be built using the node to make the wiki more accessible. The node can be used locally or from a web application. At Bitxenia, we provide our own [web client](https://github.com/bitxenia/rc), but users are free to create their own if desired.
+A _frontend_ client can be built using the node to make the wiki more accessible. The node can be used locally or from a web application. At Bitxenia, we provide our own [web client](https://github.com/bitxenia/astrawiki-web), but users are free to create their own if desired.
 
 ## Install
 
