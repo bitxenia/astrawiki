@@ -2,6 +2,7 @@ import { OrbitDB } from "@orbitdb/core";
 import { Database } from "./database.js";
 import { ArticleDatabase } from "./articleDatabase.js";
 import { Article } from "../article.js";
+import { ConnectionManager } from "./connectionManager.js";
 import { CID } from "multiformats/cid";
 
 export class ArticleRepositoryDatabase extends Database {
@@ -9,7 +10,7 @@ export class ArticleRepositoryDatabase extends Database {
   isCollaborator: boolean;
   articleNames: Set<string>;
   articleDBs: Map<string, ArticleDatabase>;
-  dbAddressCID: CID;
+  connectionManager: ConnectionManager;
 
   constructor(orbitdb: OrbitDB, wikiName: string, isCollaborator: boolean) {
     super(orbitdb);
@@ -17,6 +18,7 @@ export class ArticleRepositoryDatabase extends Database {
     this.isCollaborator = isCollaborator;
     this.articleNames = new Set();
     this.articleDBs = new Map();
+    this.connectionManager = new ConnectionManager(this.orbitdb.ipfs.libp2p);
   }
 
   public async init() {
@@ -24,13 +26,10 @@ export class ArticleRepositoryDatabase extends Database {
     console.log(
       `Article repository database created with address ${this.openDb.address}`
     );
-    this.dbAddressCID = this.getDBAddressCID();
 
-    // Start connecting to providers.
-    // We do not await for this to finish so it can run in the background.
-    this.startService(async () => {
-      await this.connectToProviders();
-    });
+    // Start the connection manager.
+    // This is used to manage and connect to other astrawikis peers.
+    await this.connectionManager.init(this.getDBAddressCID());
 
     // TODO: Maybe add a flag to know if the database is new and we should not sync.
     const synced = await this.syncDb();
@@ -48,12 +47,7 @@ export class ArticleRepositoryDatabase extends Database {
     this.startService(async () => {
       await this.updateDB();
     });
-    if (this.isCollaborator) {
-      // We only provide the database if we are a collaborator.
-      this.startService(async () => {
-        await this.provideDB();
-      });
-    }
+
     await this.setupDbEvents();
   }
 
@@ -117,52 +111,6 @@ export class ArticleRepositoryDatabase extends Database {
     this.articleDBs.set(articleName, articleDB);
   }
 
-  private async connectToProviders(): Promise<boolean> {
-    let providersFound = false;
-
-    // TODO: Check if we need to add a timeout.
-    try {
-      let providers =
-        await this.orbitdb.ipfs.libp2p.contentRouting.findProviders(
-          this.dbAddressCID
-        );
-      for await (const provider of providers) {
-        providersFound = true;
-        console.log(`Connecting to provider: ${provider.id}`);
-        try {
-          await this.orbitdb.ipfs.libp2p.dial(provider.id);
-        } catch (error) {
-          console.error(
-            `Error connecting to provider ${provider.id}: ${error}`
-          );
-        }
-      }
-    } catch (error) {
-      console.error("Error finding providers:", error);
-    }
-    return providersFound;
-  }
-
-  private async provideDB() {
-    // TODO: See if we need to reprovide or if it is done automatically with helia/libp2p.
-    // TODO: See if we need to also provide the "file", we could be getting "banned" from the network.
-    const cid = this.getDBAddressCID();
-    try {
-      console.log("Providing database address...");
-      const startTime = performance.now();
-      await this.orbitdb.ipfs.routing.provide(cid);
-      const endTime = performance.now();
-
-      console.log(
-        `Database address provided, took ${
-          (endTime - startTime) / 1000
-        } seconds`
-      );
-    } catch (error) {
-      console.error("Error providing database:", error);
-    }
-  }
-
   private async updateDB() {
     // Because of orbitdb eventual consistency nature, we need to keep if new articles were added
     // when we sync with other peers. This is because not all the entry sync updates trigger the
@@ -214,8 +162,8 @@ export class ArticleRepositoryDatabase extends Database {
       } catch (error) {
         console.error("Error in service function:", error);
       }
-      // Wait 60 seconds before running the service function again
-      await new Promise((resolve) => setTimeout(resolve, 60000));
+      // Wait 10 seconds before running the service function again
+      await new Promise((resolve) => setTimeout(resolve, 10000));
     }
   }
 
