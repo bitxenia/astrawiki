@@ -41,15 +41,6 @@ jobs:
           echo "exists=true" >> $GITHUB_OUTPUT
         else
           echo "exists=false" >> $GITHUB_OUTPUT
+        fi
 
-    - name: Delete existing tag (if needed)
-      if: steps.check_tag.outputs.exists == 'true'
-      run: |
-        git push --delete origin v${{ steps.get_version.outputs.version }} || true
-        git tag -d v${{ steps.get_version.outputs.version }} || true
-
-    - name: Create and push tag
-      if: steps.check_tag.outputs.exists == 'false'
-      run: |
-        git tag -a v${{ steps.get_version.outputs.version }} -m "Version ${{ steps.get_version.outputs.version }}"
-        git push origin v${{ steps.get_version.outputs.version }}
+    - name: Delete existing
