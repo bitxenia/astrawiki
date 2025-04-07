@@ -1,6 +1,6 @@
 import { HeliaLibp2p } from "helia";
 import { CID } from "multiformats/cid";
-import { PeerId } from "@libp2p/interface";
+import { Peer, PeerId } from "@libp2p/interface";
 
 const ASTRAWIKI_PROTOCOL = "/ipfs/astrawiki";
 
@@ -95,7 +95,13 @@ export class ConnectionManager {
   }
 
   private async manageNewConnection(peerId: PeerId) {
-    const peerInfo = await this.ipfs.libp2p.peerStore.get(peerId);
+    let peerInfo: Peer;
+    try {
+      peerInfo = await this.ipfs.libp2p.peerStore.get(peerId);
+    } catch (error) {
+      console.error("Error getting peer info, skipping:", error);
+      return;
+    }
 
     // See if the peer is not an Astrawiki peer.
     if (!peerInfo.protocols.includes(ASTRAWIKI_PROTOCOL)) {

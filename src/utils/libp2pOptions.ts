@@ -31,7 +31,7 @@ export function CreateLibp2pOptions(publicIP: string) {
       `/ip4/${publicIP}/tcp/4001/`,
       `/ip4/${publicIP}/tcp/4002/ws`,
       `/ip4/${publicIP}/tcp/4003/tls/ws`,
-      `/ip4/${publicIP}/udp/4004/webrtc-direct`,
+      `/ip4/${publicIP}/udp/4004/webrtc-direct/certhash`,
     ];
   }
 
