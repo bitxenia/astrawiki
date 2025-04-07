@@ -22,7 +22,6 @@ import { gossipsub } from "@chainsafe/libp2p-gossipsub";
 import { webTransport } from "@libp2p/webtransport";
 import { keychain } from "@libp2p/keychain";
 import { autoTLS } from "@ipshipyard/libp2p-auto-tls";
-import { Libp2pOptions } from "libp2p";
 
 export function CreateLibp2pOptions(publicIP: string) {
   let appendAnnounce: string[] = [];
@@ -43,6 +42,8 @@ export function CreateLibp2pOptions(publicIP: string) {
         "/ip4/0.0.0.0/tcp/4001",
         "/ip4/0.0.0.0/tcp/4002/ws",
         "/ip4/0.0.0.0/tcp/4003/ws",
+        "/p2p-circuit",
+        "/webrtc",
       ],
       // Two websocket adresses are added for auto-tls to work.
       // Per: https://github.com/libp2p/js-libp2p/issues/2929
@@ -51,10 +52,10 @@ export function CreateLibp2pOptions(publicIP: string) {
     },
     transports: [
       tcp(),
-      //circuitRelayTransport(),
-      //webRTC(),
-      //webRTCDirect(),
-      //webTransport(),
+      circuitRelayTransport(),
+      webRTC(),
+      webRTCDirect(),
+      webTransport(),
       webSockets({
         filter: filters.all,
       }),

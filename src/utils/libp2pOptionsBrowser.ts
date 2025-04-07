@@ -22,14 +22,14 @@ import { Libp2pOptions } from "libp2p";
 
 export function CreateLibp2pOptionsBrowser(): Partial<Libp2pOptions> {
   return {
-    // addresses: {
-    //   listen: ["/p2p-circuit", "/webrtc"],
-    // },
+    addresses: {
+      listen: ["/p2p-circuit", "/webrtc"],
+    },
     transports: [
-      // circuitRelayTransport(),
-      // webRTC(),
-      // webRTCDirect(),
-      // webTransport(),
+      circuitRelayTransport(),
+      webRTC(),
+      webRTCDirect(),
+      webTransport(),
       webSockets({
         filter: filters.all,
       }),
