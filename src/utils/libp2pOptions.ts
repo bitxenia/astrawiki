@@ -68,6 +68,14 @@ export function CreateLibp2pOptions(publicIP: string) {
     connectionGater: {
       denyDialMultiaddr: () => false,
     },
+    connectionManager: {
+      // With the latest version of libp2p the timeouts for stream upgrades seems to be too aggresive
+      // https://github.com/libp2p/js-libp2p/issues/2897#issuecomment-2674706509
+      inboundStreamProtocolNegotiationTimeout: 1e4,
+      inboundUpgradeTimeout: 1e4,
+      outboundStreamProtocolNegotiationTimeout: 1e4,
+      outboundUpgradeTimeout: 1e4,
+    },
     peerDiscovery: [
       pubsubPeerDiscovery({
         interval: 1000,
