@@ -50,7 +50,10 @@ export function CreateLibp2pOptionsBrowser(): Partial<Libp2pOptions> {
     peerDiscovery: [
       pubsubPeerDiscovery({
         interval: 1000,
-        topics: ["bitxenia._peer-discovery._p2p._pubsub"],
+        topics: [
+          "bitxenia._peer-discovery._p2p._pubsub",
+          "_peer-discovery._p2p._pubsub",
+        ],
         listenOnly: false,
       }),
       bootstrap({

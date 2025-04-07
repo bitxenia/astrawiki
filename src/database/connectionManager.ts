@@ -12,7 +12,7 @@ export class ConnectionManager {
     this.ipfs = ipfs;
   }
 
-  public async init(providerCID: CID) {
+  public async init(providerCID: CID, isCollaborator: boolean) {
     this.providerCID = providerCID;
 
     // Add astrawiki protocol to the libp2p node.
@@ -24,9 +24,12 @@ export class ConnectionManager {
       await this.connectToProviders();
     });
 
-    this.startService(async () => {
-      await this.provideDB();
-    });
+    // We only want to provide the database if we are a collaborator.
+    if (isCollaborator) {
+      this.startService(async () => {
+        await this.provideDB();
+      });
+    }
 
     this.setupEvents();
   }
