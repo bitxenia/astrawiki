@@ -42,6 +42,7 @@ export function CreateLibp2pOptions(publicIP: string) {
         "/ip4/0.0.0.0/tcp/4001",
         "/ip4/0.0.0.0/tcp/4002/ws",
         "/ip4/0.0.0.0/tcp/4003/ws",
+        "/ip4/0.0.0.0/udp/4004/webrtc-direct",
         "/p2p-circuit",
         "/webrtc",
       ],

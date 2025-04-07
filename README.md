@@ -74,6 +74,7 @@ The ports that need to be opened manually are:
 - `4001` used to receive `TCP` incoming connections.
 - `4002` used to receive `WebSocket` incoming connections.
 - `4003` used to receive `WebSocketSecure` upgraded by `autoTLS` incoming connections.
+- `4004` used to receive `WebRTC-Direct` incoming connections.
 
 If this does not work, your ISP may be using Double NAT, which prevents incoming connections. In this case, you may need to contact your ISP to request a solution.
 
