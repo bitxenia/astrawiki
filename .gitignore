@@ -14,3 +14,6 @@ data
 orbitdb
 *.log
 config.json
+.astrawiki.pid
+astrawiki.log
+astrawiki-error.log

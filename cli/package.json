@@ -1,0 +1,30 @@
+{
+  "name": "astrawiki-cli",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "clean": "rm -rf data orbitdb"
+  },
+  "bin": {
+    "astrawiki": "./dist/index.js"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@bitxenia/astrawiki": "^0.0.9",
+    "axios": "^1.8.4",
+    "blockstore-fs": "^2.0.2",
+    "commander": "^13.1.0",
+    "datastore-fs": "^10.0.2",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "typescript": "^5.8.3"
+  }
+}
