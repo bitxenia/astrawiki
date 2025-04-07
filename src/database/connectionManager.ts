@@ -48,7 +48,7 @@ export class ConnectionManager {
             continue;
           }
           // Check if we are already connected.
-          if (this.ipfs.libp2p.peerStore.has(provider.id)) {
+          if (this.ipfs.libp2p.getConnections(provider.id).length > 0) {
             console.log(`Already connected to provider: ${provider.id}`);
             continue;
           }
