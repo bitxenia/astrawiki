@@ -18,7 +18,7 @@ export class ArticleRepositoryDatabase extends Database {
     this.isCollaborator = isCollaborator;
     this.articleNames = new Set();
     this.articleDBs = new Map();
-    this.connectionManager = new ConnectionManager(this.orbitdb.ipfs.libp2p);
+    this.connectionManager = new ConnectionManager(this.orbitdb.ipfs);
   }
 
   public async init() {
