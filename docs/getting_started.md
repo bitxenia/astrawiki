@@ -187,8 +187,8 @@ import { createAstrawikiNode } from "@bitxenia/astrawiki";
 import { FsBlockstore } from "blockstore-fs";
 import { FsDatastore } from "datastore-fs";
 
-blockstore = new FsBlockstore("./data/ipfs/block-store");
-datastore = new FsDatastore("./data/ipfs/data-store");
+const blockstore = new FsBlockstore("./data/ipfs/block-store");
+const datastore = new FsDatastore("./data/ipfs/data-store");
 
 const node = await createAstrawikiNode({
   wikiName: "bitxenia-wiki",
