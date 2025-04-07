@@ -7,12 +7,12 @@ on:
     branches:
       - main
     paths:
-      - 'package.json'
+      - "package.json"
   pull_request:
     branches:
       - main
     paths:
-      - 'package.json'
+      - "package.json"
 
 jobs:
   Tag:
@@ -21,26 +21,36 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Configure git identity
-      run: |
-        git config --global user.email "actions@github.com"
-        git config --global user.name "GitHub Actions"
+      - name: Configure git identity
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
 
-    - name: Get version from package.json
-      id: get_version
-      run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+      - name: Get version from package.json
+        id: get_version
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
-    - name: Check if tag exists
-      id: check_tag
-      run: |
-        if git rev-parse v${{ steps.get_version.outputs.version }} >/dev/null 2>&1; then
-          echo "exists=true" >> $GITHUB_OUTPUT
-        else
-          echo "exists=false" >> $GITHUB_OUTPUT
-        fi
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git rev-parse v${{ steps.get_version.outputs.version }} >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
 
-    - name: Delete existing
+      - name: Delete existing tag (if needed)
+        if: steps.check_tag.outputs.exists == 'true'
+        run: |
+          git push --delete origin v${{ steps.get_version.outputs.version }} || true
+          git tag -d v${{ steps.get_version.outputs.version }} || true
+
+      - name: Create and push tag
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          git tag -a v${{ steps.get_version.outputs.version }} -m "Version ${{ steps.get_version.outputs.version }}"
+          git push origin v${{ steps.get_version.outputs.version }}
