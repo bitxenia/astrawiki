@@ -29,7 +29,10 @@ export class ArticleRepositoryDatabase extends Database {
 
     // Start the connection manager.
     // This is used to manage and connect to other astrawikis peers.
-    await this.connectionManager.init(this.getDBAddressCID());
+    await this.connectionManager.init(
+      this.getDBAddressCID(),
+      this.isCollaborator
+    );
 
     // TODO: Maybe add a flag to know if the database is new and we should not sync.
     const synced = await this.syncDb();
