@@ -54,7 +54,12 @@ export class ConnectionManager {
           }
 
           console.log(`Connecting to provider: ${provider.id}`);
-          await this.ipfs.libp2p.dial(provider.id);
+
+          this.ipfs.libp2p.dial(provider.id).catch((error) => {
+            console.error(
+              `Error connecting to provider ${provider.id}: ${error}`
+            );
+          });
         } catch (error) {
           console.error(
             `Error connecting to provider ${provider.id}: ${error}`
