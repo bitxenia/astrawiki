@@ -77,6 +77,10 @@ The ports that need to be opened manually are:
 
 If this does not work, your ISP may be using Double NAT, which prevents incoming connections. In this case, you may need to contact your ISP to request a solution.
 
+## Other implementations
+
+- https://github.com/bitxenia/astrawiki-eth
+
 ## License
 
 MIT (LICENSE-MIT / http://opensource.org/licenses/MIT)
