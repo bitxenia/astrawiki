@@ -31,7 +31,7 @@ export function CreateLibp2pOptions(publicIP: string) {
       `/ip4/${publicIP}/tcp/4001/`,
       `/ip4/${publicIP}/tcp/4002/ws`,
       `/ip4/${publicIP}/tcp/4003/tls/ws`,
-      `/ip4/${publicIP}/udp/4004/webrtc-direct/certhash`,
+      // `/ip4/${publicIP}/udp/4004/webrtc-direct/certhash`,
     ];
   }
 
@@ -43,9 +43,9 @@ export function CreateLibp2pOptions(publicIP: string) {
         "/ip4/0.0.0.0/tcp/4001",
         "/ip4/0.0.0.0/tcp/4002/ws",
         "/ip4/0.0.0.0/tcp/4003/ws",
-        "/ip4/0.0.0.0/udp/4004/webrtc-direct",
-        "/p2p-circuit",
-        "/webrtc",
+        // "/ip4/0.0.0.0/udp/4004/webrtc-direct",
+        // "/p2p-circuit",
+        // "/webrtc",
       ],
       // Two websocket adresses are added for auto-tls to work.
       // Per: https://github.com/libp2p/js-libp2p/issues/2929
@@ -54,10 +54,10 @@ export function CreateLibp2pOptions(publicIP: string) {
     },
     transports: [
       tcp(),
-      circuitRelayTransport(),
-      webRTC(),
-      webRTCDirect(),
-      webTransport(),
+      // circuitRelayTransport(),
+      // webRTC(),
+      // webRTCDirect(),
+      // webTransport(),
       webSockets({
         filter: filters.all,
       }),

@@ -1,6 +1,6 @@
 {
   "name": "@bitxenia/astrawiki",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Decentralized p2p wiki on IPFS",
   "author": "Bitxenia",
   "license": "MIT",
