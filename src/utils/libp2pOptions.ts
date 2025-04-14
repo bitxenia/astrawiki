@@ -28,10 +28,10 @@ export function CreateLibp2pOptions(publicIP: string) {
   // If a public ip was provided, use append announce
   if (publicIP != "0.0.0.0") {
     appendAnnounce = [
-      `/ip4/${publicIP}/tcp/4001/`,
-      `/ip4/${publicIP}/tcp/4002/ws`,
-      `/ip4/${publicIP}/tcp/4003/tls/ws`,
-      // `/ip4/${publicIP}/udp/4004/webrtc-direct/certhash`,
+      `/ip4/${publicIP}/tcp/40001/`,
+      `/ip4/${publicIP}/tcp/40002/ws`,
+      `/ip4/${publicIP}/tcp/40003/tls/ws`,
+      // `/ip4/${publicIP}/udp/40004/webrtc-direct/certhash`,
     ];
   }
 
@@ -40,10 +40,10 @@ export function CreateLibp2pOptions(publicIP: string) {
     // Websocket ports need to differ from the tcp ports
     addresses: {
       listen: [
-        "/ip4/0.0.0.0/tcp/4001",
-        "/ip4/0.0.0.0/tcp/4002/ws",
-        "/ip4/0.0.0.0/tcp/4003/ws",
-        // "/ip4/0.0.0.0/udp/4004/webrtc-direct",
+        "/ip4/0.0.0.0/tcp/40001",
+        "/ip4/0.0.0.0/tcp/40002/ws",
+        "/ip4/0.0.0.0/tcp/40003/ws",
+        // "/ip4/0.0.0.0/udp/40004/webrtc-direct",
         // "/p2p-circuit",
         // "/webrtc",
       ],
