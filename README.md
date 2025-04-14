@@ -71,9 +71,9 @@ If the node is set to collaborate and it fails to do so, the reason should most 
 
 The ports that need to be opened manually are:
 
-- `4001` used to receive `TCP` incoming connections.
-- `4002` used to receive `WebSocket` incoming connections.
-- `4003` used to receive `WebSocketSecure` upgraded by `autoTLS` incoming connections.
+- `40001` used to receive `TCP` incoming connections.
+- `40002` used to receive `WebSocket` incoming connections.
+- `40003` used to receive `WebSocketSecure` upgraded by `autoTLS` incoming connections.
 
 If this does not work, your ISP may be using Double NAT, which prevents incoming connections. In this case, you may need to contact your ISP to request a solution.
 
