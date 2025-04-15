@@ -19,7 +19,7 @@ export class Database {
     // https://github.com/orbitdb/orbitdb/blob/d290032ebf1692feee1985853b2c54d376bbfc82/src/access-controllers/ipfs.js#L56
     const storage = await ComposedStorage(
       await LRUStorage({ size: 1000 }),
-      await IPFSBlockStorage({ ipfs: this.orbitdb.ipfs, pin: true })
+      await IPFSBlockStorage({ ipfs: this.orbitdb.ipfs, pin: true }),
     );
 
     const db = await this.orbitdb.open(dbName, {
@@ -50,12 +50,12 @@ export class Database {
     try {
       await this.waitFor(
         async () => synced,
-        async () => true
+        async () => true,
       );
     } catch (error) {
       console.error("Timeout waiting for database to sync:", error);
       console.log(
-        "Database was not synced with any provider. Asuming it is a new database with no providers."
+        "Database was not synced with any provider. Asuming it is a new database with no providers.",
       );
       return false;
     }
@@ -66,7 +66,7 @@ export class Database {
     valueA: any,
     toBeValueB: any,
     pollInterval = 100,
-    timeout = 10000 // 10 seconds | TODO: see if this is enough
+    timeout = 10000, // 10 seconds | TODO: see if this is enough
   ): Promise<void> {
     // TODO: We use this slight modifided busy wait found in the OrbitDB codebase:
     // https://github.com/orbitdb/orbitdb/blob/main/test/utils/wait-for.js

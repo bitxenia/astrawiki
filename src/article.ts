@@ -14,7 +14,7 @@ export class Article {
   constructor(
     articleName: string,
     articleDB: ArticleDatabase,
-    versions: Version[]
+    versions: Version[],
   ) {
     this.articleName = articleName;
     this.articleDB = articleDB;
@@ -34,7 +34,7 @@ export class Article {
 
   public getVersions() {
     const mainBranch = new Set(
-      this.versionManager.getMainBranch().map((version) => version.id)
+      this.versionManager.getMainBranch().map((version) => version.id),
     );
 
     return this.versionManager.getAllVersions().map((version: Version) => {
@@ -62,7 +62,7 @@ export class Article {
       version = newVersion("", content, articleParentVersionID ?? null);
     } else {
       const changesUntilVersion = this.versionManager.getBranch(
-        articleParentVersionID
+        articleParentVersionID,
       );
       const oldText = compileTextFromVersions(changesUntilVersion);
       version = newVersion(oldText, content, articleParentVersionID);

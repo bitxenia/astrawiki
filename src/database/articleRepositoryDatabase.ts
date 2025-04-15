@@ -24,14 +24,14 @@ export class ArticleRepositoryDatabase extends Database {
   public async init() {
     this.openDb = await this.createDatabase(this.wikiName);
     console.log(
-      `Article repository database created with address ${this.openDb.address}`
+      `Article repository database created with address ${this.openDb.address}`,
     );
 
     // Start the connection manager.
     // This is used to manage and connect to other astrawikis peers.
     await this.connectionManager.init(
       this.getDBAddressCID(),
-      this.isCollaborator
+      this.isCollaborator,
     );
 
     // TODO: Maybe add a flag to know if the database is new and we should not sync.
@@ -87,7 +87,7 @@ export class ArticleRepositoryDatabase extends Database {
 
   public async addArticle(
     articleName: string,
-    articleContent: string
+    articleContent: string,
   ): Promise<void> {
     // Check if the article already exist
     if (this.articleNames.has(articleName)) {
@@ -97,7 +97,7 @@ export class ArticleRepositoryDatabase extends Database {
     const articleDB = new ArticleDatabase(
       this.orbitdb,
       this.wikiName,
-      articleName
+      articleName,
     );
     await articleDB.initNew();
     const article = new Article(articleName, articleDB, []);
@@ -149,7 +149,7 @@ export class ArticleRepositoryDatabase extends Database {
       const articleDb = new ArticleDatabase(
         this.orbitdb,
         this.wikiName,
-        articleName
+        articleName,
       );
       await articleDb.initExisting();
       this.articleDBs.set(articleName, articleDb);

@@ -15,6 +15,12 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"TODO: no test specified\" && exit 0",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
   "dependencies": {
     "@bitxenia/wiki-version-manager": "^0.1.2",
     "@chainsafe/libp2p-gossipsub": "^14.1.1",
@@ -45,12 +51,14 @@
     "helia": "^5.3.0",
     "libp2p": "2.8.2"
   },
-  "scripts": {
-    "build": "tsc",
-    "test": "echo \"TODO: no test specified\" && exit 0"
-  },
   "devDependencies": {
     "@types/diff-match-patch": "^1.0.36",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.1",
+    "prettier-plugin-tailwindcss": "^0.6.10",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.6",
+    "eslint-config-prettier": "^10.0.1"
   }
 }

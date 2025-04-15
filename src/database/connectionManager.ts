@@ -38,7 +38,7 @@ export class ConnectionManager {
     // TODO: Check if we need to add a timeout.
     try {
       let providers = this.ipfs.libp2p.contentRouting.findProviders(
-        this.providerCID
+        this.providerCID,
       );
       for await (const provider of providers) {
         try {
@@ -57,12 +57,12 @@ export class ConnectionManager {
 
           this.ipfs.libp2p.dial(provider.id).catch((error) => {
             console.error(
-              `Error connecting to provider ${provider.id}: ${error}`
+              `Error connecting to provider ${provider.id}: ${error}`,
             );
           });
         } catch (error) {
           console.error(
-            `Error connecting to provider ${provider.id}: ${error}`
+            `Error connecting to provider ${provider.id}: ${error}`,
           );
         }
       }
@@ -85,7 +85,7 @@ export class ConnectionManager {
       console.log(
         `Database address provided, took ${
           (endTime - startTime) / 1000
-        } seconds`
+        } seconds`,
       );
     } catch (error) {
       console.error("Error providing database:", error);

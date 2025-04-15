@@ -11,7 +11,7 @@ export class ArticleRepository {
     this.articleRepositoryDB = new ArticleRepositoryDatabase(
       orbitdb,
       wikiName,
-      isCollaborator
+      isCollaborator,
     );
     this.lastVersionFetchedByArticle = new Map();
   }
@@ -22,14 +22,14 @@ export class ArticleRepository {
 
   public async getArticle(
     articleName: string,
-    articleVersionID?: string
+    articleVersionID?: string,
   ): Promise<ArticleInfo> {
     const article = await this.articleRepositoryDB.getArticle(articleName);
 
     // Update the last version fetched.
     this.lastVersionFetchedByArticle.set(
       articleName,
-      article.getCurrentVersionID()
+      article.getCurrentVersionID(),
     );
     const articleContent = article.getContent(articleVersionID);
     const articleVersions = article.getVersions();
@@ -46,7 +46,7 @@ export class ArticleRepository {
 
   public async editArticle(
     articleName: string,
-    newArticleContent: string
+    newArticleContent: string,
   ): Promise<void> {
     const article = await this.articleRepositoryDB.getArticle(articleName);
 
@@ -55,7 +55,7 @@ export class ArticleRepository {
       this.lastVersionFetchedByArticle.get(articleName);
     if (!lastVersionFetched) {
       throw Error(
-        `Article ${articleName} was not previously fetched. Fetched articles: ${this.lastVersionFetchedByArticle.keys()}`
+        `Article ${articleName} was not previously fetched. Fetched articles: ${this.lastVersionFetchedByArticle.keys()}`,
       );
     }
     await article.newContent(newArticleContent, lastVersionFetched);

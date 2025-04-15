@@ -11,7 +11,7 @@ import type { Datastore } from "interface-datastore";
 export const startOrbitDb = async (
   datastore: Datastore,
   blockstore: Blockstore,
-  publicIP: string
+  publicIP: string,
 ) => {
   const isBrowser = typeof window !== "undefined";
   if (isBrowser) {

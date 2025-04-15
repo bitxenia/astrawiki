@@ -69,7 +69,7 @@ export interface AstrawikiNodeInit {
  * @instance
  */
 export async function createAstrawikiNode(
-  init: AstrawikiNodeInit = {}
+  init: AstrawikiNodeInit = {},
 ): Promise<AstrawikiNodeP2P> {
   // Set default values for the parameters if not provided
   const wikiname = init.wikiName ?? "bitxenia-wiki";
@@ -92,7 +92,7 @@ export interface AstrawikiNode {
    */
   getArticle(
     articleName: string,
-    articleVersionID?: string
+    articleVersionID?: string,
   ): Promise<ArticleInfo>;
 
   /**

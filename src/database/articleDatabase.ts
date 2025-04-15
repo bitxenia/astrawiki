@@ -16,7 +16,7 @@ export class ArticleDatabase extends Database {
     // TODO: Find a better protocol to name the article, current protocol:
     // "<wiki-name>::<article-name>"
     this.openDb = await this.createDatabase(
-      `${this.wikiName}::${this.articleName}`
+      `${this.wikiName}::${this.articleName}`,
     );
   }
 
