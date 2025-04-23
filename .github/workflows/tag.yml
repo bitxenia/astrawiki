@@ -8,11 +8,6 @@ on:
       - main
     paths:
       - "package.json"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "package.json"
 
 jobs:
   Tag:
