@@ -18,9 +18,8 @@ import * as filters from "@libp2p/websockets/filters";
 import { pubsubPeerDiscovery } from "@libp2p/pubsub-peer-discovery";
 import { gossipsub } from "@chainsafe/libp2p-gossipsub";
 import { webTransport } from "@libp2p/webtransport";
-import { Libp2pOptions } from "libp2p";
 
-export function CreateLibp2pOptionsBrowser(): Partial<Libp2pOptions> {
+export function CreateLibp2pOptionsBrowser() {
   return {
     // addresses: {
     //   listen: ["/p2p-circuit", "/webrtc"],
@@ -85,6 +84,9 @@ export function CreateLibp2pOptionsBrowser(): Partial<Libp2pOptions> {
         // https://github.com/libp2p/js-libp2p/tree/main/packages/kad-dht#example---connecting-to-the-ipfs-amino-dht
         protocol: "/ipfs/kad/1.0.0",
         peerInfoMapper: removePrivateAddressesMapper,
+        // Server mode makes the node unable to receive connections, I think it is becuase it is always full.
+        // We do not need server mode anyway.
+        clientMode: true,
         validators: {
           ipns: ipnsValidator,
         },
