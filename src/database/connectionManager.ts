@@ -1,13 +1,14 @@
 import { HeliaLibp2p } from "helia";
 import { CID } from "multiformats/cid";
 import { Peer, PeerId } from "@libp2p/interface";
-import { unixfs } from "@helia/unixfs";
+import { UnixFS, unixfs } from "@helia/unixfs";
 
 const ASTRAWIKI_PROTOCOL = "/ipfs/astrawiki";
 
 export class ConnectionManager {
   private ipfs: HeliaLibp2p;
   private providerCID: CID;
+  private fs: UnixFS;
 
   constructor(ipfs: HeliaLibp2p) {
     this.ipfs = ipfs;
@@ -41,19 +42,21 @@ export class ConnectionManager {
     // TODO: We are adding this file to prevent getting banned from the network. See if this is needed.
 
     // create a filesystem on top of Helia, in this case it's UnixFS
-    const fs = unixfs(this.ipfs);
+    this.fs = unixfs(this.ipfs);
 
     // we will use this TextEncoder to turn strings into Uint8Arrays
     const encoder = new TextEncoder();
 
     // add the bytes to your node and receive a unique content identifier
-    const cid = await fs.addFile({
+    const cid = await this.fs.addFile({
       content: encoder.encode(wikiName),
       path: "./astrawiki.id",
     });
 
     // Pin the block
-    this.ipfs.pins.add(cid);
+    for await (const pinnedCid of this.ipfs.pins.add(cid)) {
+      console.log(`Pinned CID: ${pinnedCid}`);
+    }
 
     console.log(`Provider CID created: ${cid}`);
 
@@ -101,23 +104,24 @@ export class ConnectionManager {
       for await (const provider of providers) {
         try {
           // Check if the provider is us.
-          if (provider.id === this.ipfs.libp2p.peerId) {
-            console.log("Provider is us, skipping...");
+          if (provider.id.equals(this.ipfs.libp2p.peerId)) {
+            // console.log("Provider is us, skipping...");
             continue;
           }
           // Check if we are already connected.
           if (this.ipfs.libp2p.getConnections(provider.id).length > 0) {
-            console.log(`Already connected to provider: ${provider.id}`);
+            // console.log(`Already connected to provider: ${provider.id}`);
             continue;
           }
 
-          console.log(`Connecting to provider: ${provider.id}`);
+          console.log(`New provider found, connecting: ${provider.id}`);
 
           this.ipfs.libp2p.dial(provider.id).catch((error) => {
             console.error(
               `Error connecting to provider ${provider.id}: ${error}`
             );
           });
+          console.log(`Connected to provider: ${provider.id}`);
         } catch (error) {
           console.error(
             `Error connecting to provider ${provider.id}: ${error}`
