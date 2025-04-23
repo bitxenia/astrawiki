@@ -1,6 +1,7 @@
 import { HeliaLibp2p } from "helia";
 import { CID } from "multiformats/cid";
 import { Peer, PeerId } from "@libp2p/interface";
+import { unixfs } from "@helia/unixfs";
 
 const ASTRAWIKI_PROTOCOL = "/ipfs/astrawiki";
 
@@ -12,8 +13,11 @@ export class ConnectionManager {
     this.ipfs = ipfs;
   }
 
-  public async init(providerCID: CID, isCollaborator: boolean) {
-    this.providerCID = providerCID;
+  public async init(wikiName: string, isCollaborator: boolean) {
+    this.providerCID = await this.constructProviderCID(
+      wikiName,
+      isCollaborator
+    );
 
     // Add astrawiki protocol to the libp2p node.
     this.ipfs.libp2p.handle(ASTRAWIKI_PROTOCOL, ({ stream }) => {
@@ -24,14 +28,63 @@ export class ConnectionManager {
       await this.connectToProviders();
     });
 
+    this.setupEvents();
+  }
+
+  private async constructProviderCID(
+    wikiName: string,
+    isCollaborator: boolean
+  ): Promise<CID> {
+    // This is the CID used to identify the wiki.
+    // We upload it to ipfs and provide it (if we are a collaborator) so other peers can find us.
+
+    // TODO: We are adding this file to prevent getting banned from the network. See if this is needed.
+
+    // create a filesystem on top of Helia, in this case it's UnixFS
+    const fs = unixfs(this.ipfs);
+
+    // we will use this TextEncoder to turn strings into Uint8Arrays
+    const encoder = new TextEncoder();
+
+    // add the bytes to your node and receive a unique content identifier
+    const cid = await fs.addFile({
+      content: encoder.encode(wikiName),
+      path: "./astrowiki.id",
+    });
+
+    // Pin the block
+    this.ipfs.pins.add(cid);
+
+    console.log(`Provider CID created: ${cid}`);
+
     // We only want to provide the database if we are a collaborator.
     if (isCollaborator) {
-      this.startService(async () => {
-        await this.provideDB();
-      });
+      // We do not await to the provide to finish.
+      this.provideDB(cid);
     }
 
-    this.setupEvents();
+    return cid;
+  }
+
+  private async provideDB(cid: CID): Promise<void> {
+    // TODO: See if only colaborators should provide the database.
+
+    /**
+     * Helia will periodically re-provide every previously provided CID.
+     * https://github.com/ipfs/helia/blob/bb2ab74e711ae67514397aa982e35031bdf6541f/packages/interface/src/routing.ts#L67
+     */
+    try {
+      console.log("Providing CID address...");
+      const startTime = performance.now();
+      await this.ipfs.routing.provide(cid);
+      const endTime = performance.now();
+
+      console.log(
+        `CID address provided, took ${(endTime - startTime) / 1000} seconds`
+      );
+    } catch (error) {
+      console.error("Error providing CID:", error);
+    }
   }
 
   private async connectToProviders(): Promise<void> {
@@ -68,27 +121,6 @@ export class ConnectionManager {
       }
     } catch (error) {
       console.error("Error finding providers:", error);
-    }
-  }
-
-  private async provideDB() {
-    // TODO: See if we need to reprovide or if it is done automatically with helia/libp2p.
-    // TODO: See if we need to also provide the "file", we could be getting "banned" from the network.
-    // TODO: See if only colaborators should provide the database.
-    const cid = this.providerCID;
-    try {
-      console.log("Providing database address...");
-      const startTime = performance.now();
-      await this.ipfs.routing.provide(cid);
-      const endTime = performance.now();
-
-      console.log(
-        `Database address provided, took ${
-          (endTime - startTime) / 1000
-        } seconds`
-      );
-    } catch (error) {
-      console.error("Error providing database:", error);
     }
   }
 
@@ -132,8 +164,8 @@ export class ConnectionManager {
       } catch (error) {
         console.error("Error in service function:", error);
       }
-      // Wait 10 seconds before running the service function again
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      // Wait 60 seconds before running the service function again
+      await new Promise((resolve) => setTimeout(resolve, 60000));
     }
   }
 }
