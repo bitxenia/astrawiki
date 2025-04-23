@@ -22,16 +22,13 @@ export class ArticleRepositoryDatabase extends Database {
   }
 
   public async init() {
+    // Start the connection manager.
+    // This is used to manage and connect to other astrawikis peers.
+    await this.connectionManager.init(this.wikiName, this.isCollaborator);
+
     this.openDb = await this.createDatabase(this.wikiName);
     console.log(
       `Article repository database created with address ${this.openDb.address}`
-    );
-
-    // Start the connection manager.
-    // This is used to manage and connect to other astrawikis peers.
-    await this.connectionManager.init(
-      this.getDBAddressCID(),
-      this.isCollaborator
     );
 
     // TODO: Maybe add a flag to know if the database is new and we should not sync.
@@ -168,10 +165,5 @@ export class ArticleRepositoryDatabase extends Database {
       // Wait 10 seconds before running the service function again
       await new Promise((resolve) => setTimeout(resolve, 10000));
     }
-  }
-
-  private getDBAddressCID() {
-    const [_, __, cid] = this.openDb.address.split("/");
-    return CID.parse(cid);
   }
 }
