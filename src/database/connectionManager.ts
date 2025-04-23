@@ -139,6 +139,7 @@ export class ConnectionManager {
   private async manageNewConnection(peerId: PeerId) {
     let peerInfo: Peer;
     try {
+      // TODO: See if peerstore is available when the event is triggered.
       peerInfo = await this.ipfs.libp2p.peerStore.get(peerId);
     } catch (error) {
       console.error("Error getting peer info, skipping:", error);
