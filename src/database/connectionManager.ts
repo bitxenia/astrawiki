@@ -49,7 +49,7 @@ export class ConnectionManager {
     // add the bytes to your node and receive a unique content identifier
     const cid = await fs.addFile({
       content: encoder.encode(wikiName),
-      path: "./astrowiki.id",
+      path: "./astrawiki.id",
     });
 
     // Pin the block
