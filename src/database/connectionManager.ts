@@ -73,17 +73,22 @@ export class ConnectionManager {
      * Helia will periodically re-provide every previously provided CID.
      * https://github.com/ipfs/helia/blob/bb2ab74e711ae67514397aa982e35031bdf6541f/packages/interface/src/routing.ts#L67
      */
-    try {
-      console.log("Providing CID address...");
-      const startTime = performance.now();
-      await this.ipfs.routing.provide(cid);
-      const endTime = performance.now();
+    let provided = false;
+    console.log("Providing CID address...");
+    while (!provided) {
+      try {
+        const startTime = performance.now();
+        await this.ipfs.routing.provide(cid);
+        const endTime = performance.now();
+        provided = true;
 
-      console.log(
-        `CID address provided, took ${(endTime - startTime) / 1000} seconds`
-      );
-    } catch (error) {
-      console.error("Error providing CID:", error);
+        console.log(
+          `CID address provided, took ${(endTime - startTime) / 1000} seconds`
+        );
+      } catch (error) {
+        console.error("Error providing CID:", error);
+        console.log("Retrying provide...");
+      }
     }
   }
 
