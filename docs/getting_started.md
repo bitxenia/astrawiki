@@ -128,7 +128,7 @@ const node = await createAstrawikiNode({
 });
 const articleName = "Carl Sagan";
 const articleContent =
-  "# Carl Sagan\n\nCarl Saggan was an American astronomer, cosmologist, astrophysicist, and author.";
+  "Carl Saggan was an American astronomer, cosmologist, astrophysicist, and author.";
 await node.createArticle(articleName, articleContent);
 console.log("Article created!");
 ```
@@ -147,7 +147,7 @@ const node = await createAstrawikiNode({
 });
 const articleName = "Carl Sagan";
 const articleContent =
-  "# Carl Sagan\n\nCarl Sagan was an American astronomer, cosmologist, astrophysicist, and author.";
+  "Carl Sagan was an American astronomer, cosmologist, astrophysicist, and author.";
 await node.editArticle(articleName, articleContent);
 console.log("Article edited!");
 ```
