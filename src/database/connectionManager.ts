@@ -53,9 +53,12 @@ export class ConnectionManager {
       path: "./astrawiki.id",
     });
 
-    // Pin the block
-    for await (const pinnedCid of this.ipfs.pins.add(cid)) {
-      console.log(`Pinned CID: ${pinnedCid}`);
+    // Check if the CID is already pinned. If not, pin it.
+    if (!(await this.ipfs.pins.isPinned(cid))) {
+      // Pin the block
+      for await (const pinnedCid of this.ipfs.pins.add(cid)) {
+        console.log(`Pinned CID: ${pinnedCid}`);
+      }
     }
 
     console.log(`Provider CID created: ${cid}`);
