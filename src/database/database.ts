@@ -6,6 +6,13 @@ import {
   LRUStorage,
 } from "@orbitdb/core";
 
+class SyncTimeoutError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SyncTimeoutError";
+  }
+}
+
 export class Database {
   orbitdb: OrbitDB;
   openDb: any;
@@ -53,11 +60,14 @@ export class Database {
         async () => true
       );
     } catch (error) {
-      console.error("Timeout waiting for database to sync:", error);
-      console.log(
-        "Database was not synced with any provider. Asuming it is a new database with no providers."
-      );
-      return false;
+      if (error instanceof SyncTimeoutError) {
+        console.log(
+          "Database was not synced with any provider. Asuming it is a new database with no providers."
+        );
+        return false;
+      } else {
+        throw error;
+      }
     }
     return true;
   }
@@ -85,7 +95,7 @@ export class Database {
 
         if (elapsedTime >= timeout) {
           clearInterval(interval);
-          reject(new Error("Timeout waiting for condition"));
+          reject(new SyncTimeoutError("Timeout waiting for condition"));
         }
       }, pollInterval);
     });
