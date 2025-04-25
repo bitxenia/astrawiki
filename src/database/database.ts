@@ -44,6 +44,7 @@ export class Database {
     // This is because the database is empty until it is synced.
     let synced = false;
     const onJoin = async (peerId: any, heads: any) => {
+      console.log(`Database ${this.openDb.address} synced with peer ${peerId}`);
       synced = true;
     };
     // We use the join event to know when an exchange of heads (sync) happened between peers.

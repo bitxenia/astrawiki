@@ -21,7 +21,7 @@ export class ConnectionManager {
     );
 
     // Add astrawiki protocol to the libp2p node.
-    this.ipfs.libp2p.handle(ASTRAWIKI_PROTOCOL, ({ stream }) => {
+    await this.ipfs.libp2p.handle(ASTRAWIKI_PROTOCOL, ({ stream }) => {
       console.log("Received connection from astrawiki peer");
     });
 
@@ -116,11 +116,17 @@ export class ConnectionManager {
 
           console.log(`New provider found, connecting: ${provider.id}`);
 
-          this.ipfs.libp2p.dial(provider.id).catch((error) => {
-            console.error(
-              `Error connecting to provider ${provider.id}: ${error}`
-            );
-          });
+          this.ipfs.libp2p.dial(provider.id).then(
+            (conn) => {
+              console.log(`Connected to provider ${provider.id}`);
+              this.manageNewConnection(provider.id);
+            },
+            (error) => {
+              console.error(
+                `Error connecting to provider ${provider.id}: ${error}`
+              );
+            }
+          );
         } catch (error) {
           console.error(
             `Error connecting to provider ${provider.id}: ${error}`
@@ -166,7 +172,7 @@ export class ConnectionManager {
     if (!peerInfo.protocols.includes(ASTRAWIKI_PROTOCOL)) {
       return;
     }
-    console.log(`Connected to astrawiki peer: ${peerId}`);
+    console.log(`Provider is an astrawiki peer: ${peerId}`);
 
     // Tag the peer with a high priority to make sure we are connected to it.
     await this.ipfs.libp2p.peerStore.merge(peerId, {

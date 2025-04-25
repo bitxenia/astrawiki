@@ -148,7 +148,8 @@ export class ArticleRepositoryDatabase extends Database {
         this.wikiName,
         articleName
       );
-      await articleDb.initExisting();
+      // Init new becuase we do not need to sync the database now.
+      await articleDb.initNew();
       this.articleDBs.set(articleName, articleDb);
       console.log(`Article ${articleName} replicated.`);
     }
