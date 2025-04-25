@@ -15,10 +15,7 @@ export class ConnectionManager {
   }
 
   public async init(wikiName: string, isCollaborator: boolean) {
-    this.providerCID = await this.constructProviderCID(
-      wikiName,
-      isCollaborator
-    );
+    this.providerCID = await this.constructProviderCID(wikiName);
 
     // Add astrawiki protocol to the libp2p node.
     await this.ipfs.libp2p.handle(ASTRAWIKI_PROTOCOL, ({ stream }) => {
@@ -29,13 +26,18 @@ export class ConnectionManager {
       await this.connectToProviders();
     });
 
+    // We only want to provide the database if we are a collaborator.
+    if (isCollaborator) {
+      // We do not await to the provide to finish.
+      this.startService(async () => {
+        await this.provideDB(this.providerCID);
+      });
+    }
+
     this.setupEvents();
   }
 
-  private async constructProviderCID(
-    wikiName: string,
-    isCollaborator: boolean
-  ): Promise<CID> {
+  private async constructProviderCID(wikiName: string): Promise<CID> {
     // This is the CID used to identify the wiki.
     // We upload it to ipfs and provide it (if we are a collaborator) so other peers can find us.
 
@@ -59,19 +61,14 @@ export class ConnectionManager {
     }
 
     console.log(`Provider CID created: ${cid}`);
-
-    // We only want to provide the database if we are a collaborator.
-    if (isCollaborator) {
-      // We do not await to the provide to finish.
-      this.provideDB(cid);
-    }
-
     return cid;
   }
 
   private async provideDB(cid: CID): Promise<void> {
     // TODO: See if only colaborators should provide the database.
 
+    // TODO: Right now we are providing the CID every 60 seconds. See if this is really needed.
+    //       Because Helia will automatically re-provide.
     /**
      * Helia will periodically re-provide every previously provided CID.
      * https://github.com/ipfs/helia/blob/bb2ab74e711ae67514397aa982e35031bdf6541f/packages/interface/src/routing.ts#L67
