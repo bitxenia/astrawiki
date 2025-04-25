@@ -145,7 +145,10 @@ export class ConnectionManager {
       // TODO: See if peerstore is available when the event is triggered.
       peerInfo = await this.ipfs.libp2p.peerStore.get(peerId);
     } catch (error) {
-      console.log("Peer info not found, skipping peer. Traceback: \n", error);
+      console.log(
+        "Warning: Peer info not found, skipping peer. Triggered by: ",
+        error
+      );
       return;
     }
 

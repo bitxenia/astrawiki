@@ -62,7 +62,7 @@ export class Database {
     } catch (error) {
       if (error instanceof SyncTimeoutError) {
         console.log(
-          "Database was not synced with any provider. Asuming it is a new database with no providers."
+          "Warning: Timeout received. Database was not synced with any provider. Asuming it is a new database with no providers."
         );
         return false;
       } else {
