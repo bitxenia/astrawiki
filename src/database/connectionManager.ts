@@ -141,15 +141,25 @@ export class ConnectionManager {
 
   private async manageNewConnection(peerId: PeerId) {
     let peerInfo: Peer;
-    try {
-      // TODO: See if peerstore is available when the event is triggered.
-      peerInfo = await this.ipfs.libp2p.peerStore.get(peerId);
-    } catch (error) {
-      console.log(
-        "Warning: Peer info not found, skipping peer. Triggered by: ",
-        error
-      );
-      return;
+    let peerInfoFound = false;
+    let retryCount = 0;
+    while (!peerInfoFound) {
+      try {
+        peerInfo = await this.ipfs.libp2p.peerStore.get(peerId);
+        peerInfoFound = true;
+      } catch (error) {
+        retryCount++;
+        if (retryCount > 10) {
+          console.log(
+            "Warning: Peer info not found, skipping peer. Triggered by: ",
+            error
+          );
+          return;
+        }
+      }
+      // Wait for the peer info to be available.
+      // TODO: Find a better way to do this.
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     // See if the peer is not an Astrawiki peer.
