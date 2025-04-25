@@ -47,11 +47,8 @@ export class ConnectionManager {
     // we will use this TextEncoder to turn strings into Uint8Arrays
     const encoder = new TextEncoder();
 
-    // add the bytes to your node and receive a unique content identifier
-    const cid = await this.fs.addFile({
-      content: encoder.encode(wikiName),
-      path: "./astrawiki.id",
-    });
+    // add the bytes to your node and receive a CID
+    const cid = await this.fs.addBytes(encoder.encode(wikiName));
 
     // Check if the CID is already pinned. If not, pin it.
     if (!(await this.ipfs.pins.isPinned(cid))) {
@@ -117,14 +114,13 @@ export class ConnectionManager {
             continue;
           }
 
-          console.log(`New provider found, connecting: ${provider.id}`);
+          console.log(`New provider found, connecting to it: ${provider.id}`);
 
           this.ipfs.libp2p.dial(provider.id).catch((error) => {
             console.error(
               `Error connecting to provider ${provider.id}: ${error}`
             );
           });
-          console.log(`Connected to provider: ${provider.id}`);
         } catch (error) {
           console.error(
             `Error connecting to provider ${provider.id}: ${error}`
