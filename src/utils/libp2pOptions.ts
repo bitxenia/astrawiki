@@ -31,7 +31,7 @@ export function CreateLibp2pOptions(publicIP: string) {
       `/ip4/${publicIP}/tcp/40001/`,
       `/ip4/${publicIP}/tcp/40002/ws`,
       `/ip4/${publicIP}/tcp/40003/tls/ws`,
-      // `/ip4/${publicIP}/udp/40004/webrtc-direct/certhash`,
+      `/ip4/${publicIP}/udp/40004/webrtc-direct`,
     ];
   }
 
@@ -43,7 +43,7 @@ export function CreateLibp2pOptions(publicIP: string) {
         "/ip4/0.0.0.0/tcp/40001",
         "/ip4/0.0.0.0/tcp/40002/ws",
         "/ip4/0.0.0.0/tcp/40003/ws",
-        // "/ip4/0.0.0.0/udp/40004/webrtc-direct",
+        "/ip4/0.0.0.0/udp/40004/webrtc-direct",
         // "/p2p-circuit",
         // "/webrtc",
       ],
@@ -56,7 +56,7 @@ export function CreateLibp2pOptions(publicIP: string) {
       tcp(),
       // circuitRelayTransport(),
       // webRTC(),
-      // webRTCDirect(),
+      webRTCDirect(),
       // webTransport(),
       webSockets({
         filter: filters.all,
