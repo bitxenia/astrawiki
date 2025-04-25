@@ -114,7 +114,7 @@ export class ConnectionManager {
             continue;
           }
 
-          console.log(`New provider found, connecting to it: ${provider.id}`);
+          console.log(`New provider found, connecting: ${provider.id}`);
 
           this.ipfs.libp2p.dial(provider.id).catch((error) => {
             console.error(
