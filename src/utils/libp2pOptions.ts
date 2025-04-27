@@ -117,8 +117,7 @@ export function CreateLibp2pOptions(publicIP: string) {
         protocol: "/ipfs/kad/1.0.0",
         peerInfoMapper: removePrivateAddressesMapper,
         // Server mode makes the node unable to receive connections, I think it is becuase it is always full.
-        // We do not need server mode anyway.
-        clientMode: true,
+        // clientMode: true,
         validators: {
           ipns: ipnsValidator,
         },

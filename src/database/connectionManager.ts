@@ -83,7 +83,7 @@ export class ConnectionManager {
         provided = true;
 
         console.log(
-          `CID address provided, took ${(endTime - startTime) / 1000} seconds`
+          `CID ${cid} provided, took ${(endTime - startTime) / 1000} seconds`
         );
       } catch (error) {
         console.error("Error providing CID:", error);
