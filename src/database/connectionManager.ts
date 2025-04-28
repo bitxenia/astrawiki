@@ -178,7 +178,7 @@ export class ConnectionManager {
     await this.ipfs.libp2p.peerStore.merge(peerId, {
       tags: {
         "astrawiki-peer": {
-          value: 10000, // 0-100 is the typical value range, but we can use 10000 to make sure we are connected.
+          value: 100, // 0-100 is the typical value range
         },
       },
     });
