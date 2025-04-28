@@ -147,22 +147,24 @@ export class ConnectionManager {
     let peerInfoFound = false;
     let retryCount = 0;
     while (!peerInfoFound) {
-      try {
-        peerInfo = await this.ipfs.libp2p.peerStore.get(peerId);
-        peerInfoFound = true;
-      } catch (error) {
-        retryCount++;
+      if (!(await this.ipfs.libp2p.peerStore.has(peerId))) {
+        // If the peer info is not found, retry a few times.
+        // This is because the peer info is not available yet.
         if (retryCount > 10) {
           console.log(
-            "Warning: Peer info not found, skipping peer. Triggered by: ",
-            error
+            "Warning: New connection peer info not found, skipping peer. Triggered by: ",
+            peerId
           );
           return;
         }
+        retryCount++;
+        // Wait for the peer info to be available.
+        // TODO: Find a better way to do this.
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        continue;
       }
-      // Wait for the peer info to be available.
-      // TODO: Find a better way to do this.
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      peerInfo = await this.ipfs.libp2p.peerStore.get(peerId);
+      peerInfoFound = true;
     }
 
     // See if the peer is not an Astrawiki peer.
@@ -172,10 +174,11 @@ export class ConnectionManager {
     console.log(`Provider is an astrawiki peer: ${peerId}`);
 
     // Tag the peer with a high priority to make sure we are connected to it.
+    // https://github.com/libp2p/js-libp2p/blob/main/doc/LIMITS.md#closing-connections
     await this.ipfs.libp2p.peerStore.merge(peerId, {
       tags: {
-        "my-tag": {
-          value: 100, // 0-100 is the typical value range
+        "astrawiki-peer": {
+          value: 10000, // 0-100 is the typical value range, but we can use 10000 to make sure we are connected.
         },
       },
     });

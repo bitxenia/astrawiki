@@ -31,7 +31,6 @@ export function CreateLibp2pOptions(publicIP: string) {
       `/ip4/${publicIP}/tcp/40001/`,
       `/ip4/${publicIP}/tcp/40002/ws`,
       `/ip4/${publicIP}/tcp/40003/tls/ws`,
-      `/ip4/${publicIP}/udp/40004/webrtc-direct`,
     ];
   }
 
@@ -43,7 +42,6 @@ export function CreateLibp2pOptions(publicIP: string) {
         "/ip4/0.0.0.0/tcp/40001",
         "/ip4/0.0.0.0/tcp/40002/ws",
         "/ip4/0.0.0.0/tcp/40003/ws",
-        "/ip4/0.0.0.0/udp/40004/webrtc-direct",
         // "/p2p-circuit",
         // "/webrtc",
       ],
@@ -117,7 +115,8 @@ export function CreateLibp2pOptions(publicIP: string) {
         protocol: "/ipfs/kad/1.0.0",
         peerInfoMapper: removePrivateAddressesMapper,
         // Server mode makes the node unable to receive connections, I think it is becuase it is always full.
-        // clientMode: true,
+        // We do not need server mode anyway.
+        clientMode: true,
         validators: {
           ipns: ipnsValidator,
         },
