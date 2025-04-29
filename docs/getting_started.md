@@ -30,9 +30,9 @@ npm i @bitxenia/astrawiki
 Create a file in your project called index.js and add the following code to it:
 
 ```ts
-import { createAstrawikiNode } from "@bitxenia/astrawiki";
+import { createAstrawiki } from "@bitxenia/astrawiki";
 
-const node = await createAstrawikiNode({
+const node = await createAstrawiki({
   wikiName: "bitxenia-wiki",
 });
 
@@ -57,7 +57,7 @@ You can choose any article name from the list of articles you fetched in the pre
 For example, to fetch the article `Argentina`, you would use the following code:
 
 ```ts
-const node = await createAstrawikiNode({
+const node = await createAstrawiki({
   wikiName: "bitxenia-wiki",
 });
 const articleName = "Argentina";
@@ -99,7 +99,7 @@ To learn how the main branch is chosen you can read the architecture docs.
 To get the content of a specific version of an article, you can use the `getArticle` method with the `articleVersionID` parameter. For example:
 
 ```ts
-const node = await createAstrawikiNode({
+const node = await createAstrawiki({
   wikiName: "bitxenia-wiki",
 });
 const articleName = "Argentina";
@@ -123,7 +123,7 @@ Now let's create and edit a new article.
 To create a new article, you can use the `createArticle` method. This method takes the article name and content as arguments. For example:
 
 ```ts
-const node = await createAstrawikiNode({
+const node = await createAstrawiki({
   wikiName: "bitxenia-wiki",
 });
 const articleName = "Carl Sagan";
@@ -142,7 +142,7 @@ For the sake of this example, let's asume that the article "Carl Sagan" doesn't 
 To edit an article, you can use the `editArticle` method. This method takes the article name and new content as arguments. For example:
 
 ```ts
-const node = await createAstrawikiNode({
+const node = await createAstrawiki({
   wikiName: "bitxenia-wiki",
 });
 const articleName = "Carl Sagan";
@@ -178,19 +178,19 @@ There are many storage implementations available. Some common ones are:
 - [datastore-fs](https://www.npmjs.com/package/datastore-fs) & [blockstore-fs](https://www.npmjs.com/package/blockstore-fs) - store in a directory on the filesystem using Node.js
 - [datastore-level](https://www.npmjs.com/package/datastore-level) & [blockstore-level](https://www.npmjs.com/package/blockstore-level) - store key/value pairs in a [LevelDB](https://github.com/google/leveldb) instance. That works in the browser.
 
-To use a persistent storage, you will need to pass the `datastore` and `blockstore` options to the `createAstrawikiNode` method.
+To use a persistent storage, you will need to pass the `datastore` and `blockstore` options to the `createAstrawiki` method.
 
-To colaborate to a wiki, you can use the `createAstrawikiNode` method with the `isColaborator` flag set to `True`. For example, to colaborate to the Bitxenia wiki you would use the following code:
+To colaborate to a wiki, you can use the `createAstrawiki` method with the `isColaborator` flag set to `True`. For example, to colaborate to the Bitxenia wiki you would use the following code:
 
 ```ts
-import { createAstrawikiNode } from "@bitxenia/astrawiki";
+import { createAstrawiki } from "@bitxenia/astrawiki";
 import { FsBlockstore } from "blockstore-fs";
 import { FsDatastore } from "datastore-fs";
 
 const blockstore = new FsBlockstore("./data/ipfs/block-store");
 const datastore = new FsDatastore("./data/ipfs/data-store");
 
-const node = await createAstrawikiNode({
+const node = await createAstrawiki({
   wikiName: "bitxenia-wiki",
   isCollaborator: true,
   datastore: datastore,
@@ -207,19 +207,19 @@ Colaborators are meant to be online and available to serve the wiki to other pee
 
 Until now we have been connecting to the same existing wiki, the bitnexia wiki. But what if you want to create your own wiki, with its own name and articles?
 
-To create a new wiki, you can simply use the `createAstrawikiNode` method with a new wiki name. It is important to note that if the wiki name already exists, you will be connected to the existing wiki. So make sure to choose a unique name for your wiki. Only a collaborator node can create a new wiki.
+To create a new wiki, you can simply use the `createAstrawiki` method with a new wiki name. It is important to note that if the wiki name already exists, you will be connected to the existing wiki. So make sure to choose a unique name for your wiki. Only a collaborator node can create a new wiki.
 
 For example, to create a new wiki called "my-wiki" you would use the following code:
 
 ```ts
-import { createAstrawikiNode } from "@bitxenia/astrawiki";
+import { createAstrawiki } from "@bitxenia/astrawiki";
 import { FsBlockstore } from "blockstore-fs";
 import { FsDatastore } from "datastore-fs";
 
 const blockstore = new FsBlockstore("./data/ipfs/block-store");
 const datastore = new FsDatastore("./data/ipfs/data-store");
 
-const node = await createAstrawikiNode({
+const node = await createAstrawiki({
   wikiName: "my-wiki",
   isCollaborator: true,
   datastore: datastore,

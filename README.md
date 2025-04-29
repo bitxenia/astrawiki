@@ -18,12 +18,12 @@ npm install @bitxenia/astrawiki
 
 ## Usage
 
-Using the `createAstrawikiNode` init function you can create and connect the node to a wiki.
+Using the `createAstrawiki` init function you can create and connect the node to a wiki.
 
 ```ts
-import { createAstrawikiNode } from "@bitxenia/astrawiki";
+import { createAstrawiki } from "@bitxenia/astrawiki";
 
-const node = await createAstrawikiNode({
+const node = await createAstrawiki({
   wikiName: "bitxenia-wiki",
 });
 
