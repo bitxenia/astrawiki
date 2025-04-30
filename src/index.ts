@@ -54,7 +54,7 @@ export interface AstrawikiInit {
   /**
    * The public ip of the node
    */
-  publicIP?: string;
+  publicIp?: string;
 }
 
 /**
@@ -76,10 +76,10 @@ export async function createAstrawiki(
   const isCollaborator = init.isCollaborator ?? false;
   const datastore = init.datastore ?? new MemoryDatastore();
   const blockstore = init.blockstore ?? new MemoryBlockstore();
-  const publicIP = init.publicIP ?? "0.0.0.0";
+  const publicIp = init.publicIp ?? "0.0.0.0";
 
   const node = new AstrawikiNode(wikiname);
-  await node.init(isCollaborator, datastore, blockstore, publicIP);
+  await node.init(isCollaborator, datastore, blockstore, publicIp);
   return node;
 }
 

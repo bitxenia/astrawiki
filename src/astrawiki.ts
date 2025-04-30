@@ -18,14 +18,17 @@ export class AstrawikiNode implements Astrawiki {
     isCollaborator: boolean,
     datastore: Datastore,
     blockstore: Blockstore,
-    publicIP: string
+    publicIp: string
   ): Promise<void> {
     this.astraDb = await createAstraDb({
       dbName: this.wikiName,
       isCollaborator: isCollaborator,
       datastore: datastore,
       blockstore: blockstore,
-      publicIP: publicIP,
+      publicIp: publicIp,
+      TcpPort: 40001,
+      WSPort: 40002,
+      WSSPort: 40003,
     });
 
     this.articleRepository = new ArticleRepository(this.wikiName, this.astraDb);
