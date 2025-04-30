@@ -16,7 +16,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "@bitxenia/astradb": "0.0.6",
+    "@bitxenia/astradb": "0.0.7",
     "@bitxenia/wiki-version-manager": "0.1.2",
     "blockstore-core": "5.0.2",
     "datastore-core": "10.0.2"
