@@ -1,30 +1,25 @@
 import { VersionID } from "@bitxenia/wiki-version-manager";
 import { ArticleInfo } from "./index.js";
-import { ArticleRepositoryDatabase } from "./database/articleRepositoryDatabase.js";
-import { type OrbitDB } from "@orbitdb/core";
+import { AstraDb } from "@bitxenia/astradb";
+import { Article } from "./article.js";
 
 export class ArticleRepository {
-  articleRepositoryDB: ArticleRepositoryDatabase;
+  wikiName: string;
+  astraDb: AstraDb;
   lastVersionFetchedByArticle: Map<string, VersionID>;
 
-  constructor(orbitdb: OrbitDB, wikiName: string, isCollaborator: boolean) {
-    this.articleRepositoryDB = new ArticleRepositoryDatabase(
-      orbitdb,
-      wikiName,
-      isCollaborator
-    );
+  constructor(wikiName: string, astraDb: AstraDb) {
+    this.wikiName = wikiName;
+    this.astraDb = astraDb;
     this.lastVersionFetchedByArticle = new Map();
-  }
-
-  public async init() {
-    await this.articleRepositoryDB.init();
   }
 
   public async getArticle(
     articleName: string,
     articleVersionID?: string
   ): Promise<ArticleInfo> {
-    const article = await this.articleRepositoryDB.getArticle(articleName);
+    const articleChanges = await this.astraDb.get(articleName);
+    const article = new Article(articleName, articleChanges, this.astraDb);
 
     // Update the last version fetched.
     this.lastVersionFetchedByArticle.set(
@@ -41,14 +36,16 @@ export class ArticleRepository {
   }
 
   public async newArticle(articleName: string, articleContent: string) {
-    await this.articleRepositoryDB.addArticle(articleName, articleContent);
+    const article = new Article(articleName, [], this.astraDb);
+    await article.newContent(articleContent);
   }
 
   public async editArticle(
     articleName: string,
     newArticleContent: string
   ): Promise<void> {
-    const article = await this.articleRepositoryDB.getArticle(articleName);
+    const articleChanges = await this.astraDb.get(articleName);
+    const article = new Article(articleName, articleChanges, this.astraDb);
 
     // TODO: See if somehow an edit to a not previously fetched article is possible.
     const lastVersionFetched =
@@ -62,6 +59,6 @@ export class ArticleRepository {
   }
 
   public async getArticleList(): Promise<string[]> {
-    return Array.from(this.articleRepositoryDB.articleNames.keys());
+    return this.astraDb.getAllKeys();
   }
 }

@@ -1,35 +1,37 @@
 import { ArticleInfo } from "./index.js";
-import { startOrbitDb } from "./utils/startOrbitdb.js";
 import { ArticleRepository } from "./articleRepository.js";
-import { AstrawikiNode as AstrawikiNode } from "./index.js";
+import { Astrawiki } from "./index.js";
 import type { Blockstore } from "interface-blockstore";
 import type { Datastore } from "interface-datastore";
+import { AstraDb, createAstraDb } from "@bitxenia/astradb";
 
-export class AstrawikiNodeP2P implements AstrawikiNode {
+export class AstrawikiNode implements Astrawiki {
+  wikiName: string;
+  astraDb: AstraDb;
   articleRepository: ArticleRepository;
 
-  public async start(
-    wikiName: string,
+  constructor(wikiName: string) {
+    this.wikiName = wikiName;
+  }
+
+  public async init(
     isCollaborator: boolean,
     datastore: Datastore,
     blockstore: Blockstore,
-    publicIP: string
+    publicIp: string
   ): Promise<void> {
-    if (isCollaborator) {
-      if (!datastore || !blockstore) {
-        throw new Error(
-          "A collaborator node should use a persistent datastore and blockstore."
-        );
-      }
-    }
-    const orbitdb = await startOrbitDb(datastore, blockstore, publicIP);
+    this.astraDb = await createAstraDb({
+      dbName: this.wikiName,
+      isCollaborator: isCollaborator,
+      datastore: datastore,
+      blockstore: blockstore,
+      publicIp: publicIp,
+      TcpPort: 40001,
+      WSPort: 40002,
+      WSSPort: 40003,
+    });
 
-    this.articleRepository = new ArticleRepository(
-      orbitdb,
-      wikiName,
-      isCollaborator
-    );
-    await this.articleRepository.init();
+    this.articleRepository = new ArticleRepository(this.wikiName, this.astraDb);
   }
 
   public async getArticle(
@@ -65,9 +67,5 @@ export class AstrawikiNodeP2P implements AstrawikiNode {
 
   public async getArticleList(): Promise<string[]> {
     return await this.articleRepository.getArticleList();
-  }
-
-  public async stop(): Promise<void> {
-    // TODO: Implement?
   }
 }

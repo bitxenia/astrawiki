@@ -4,21 +4,19 @@ import {
   Version,
   newVersion,
 } from "@bitxenia/wiki-version-manager";
-import { ArticleDatabase } from "./database/articleDatabase.js";
+import { AstraDb } from "@bitxenia/astradb";
 
 export class Article {
   articleName: string;
-  articleDB: ArticleDatabase;
+  astraDb: AstraDb;
   versionManager: VersionManager;
 
-  constructor(
-    articleName: string,
-    articleDB: ArticleDatabase,
-    versions: Version[]
-  ) {
+  constructor(articleName: string, articleChanges: string[], astraDb: AstraDb) {
     this.articleName = articleName;
-    this.articleDB = articleDB;
-    this.versionManager = new VersionManager(versions);
+    this.astraDb = astraDb;
+    this.versionManager = new VersionManager(
+      this.constructVersions(articleChanges)
+    );
   }
 
   public getContent(articleVersionID?: string) {
@@ -69,6 +67,15 @@ export class Article {
     }
 
     this.versionManager.addVersion(version);
-    await this.articleDB.addVersion(version);
+    await this.astraDb.add(this.articleName, JSON.stringify(version));
+  }
+
+  private constructVersions(articleChanges: string[]): Version[] {
+    const versions: Version[] = [];
+    for (const change of articleChanges) {
+      let version = JSON.parse(change);
+      versions.push(version);
+    }
+    return versions;
   }
 }

@@ -2,16 +2,16 @@
  * @module Astrawiki
  * @description Provides an interface for users to interact with Astrawiki.
  */
-import { AstrawikiNodeP2P } from "./astrawikiNode.js";
+import { AstrawikiNode } from "./astrawiki.js";
 import type { Blockstore } from "interface-blockstore";
 import type { Datastore } from "interface-datastore";
 import { MemoryBlockstore } from "blockstore-core";
 import { MemoryDatastore } from "datastore-core";
 
 /**
- * Options used to create an AstrawikiNode.
+ * Options used to create an Astrawiki.
  */
-export interface AstrawikiNodeInit {
+export interface AstrawikiInit {
   /**
    * Wiki name is the wiki which the node connects to.
    * By default the node will connect to the Bitxenia wiki, which name is "bitxenia-wiki".
@@ -54,39 +54,39 @@ export interface AstrawikiNodeInit {
   /**
    * The public ip of the node
    */
-  publicIP?: string;
+  publicIp?: string;
 }
 
 /**
- * Creates an instance of AstrawikiNode.
+ * Creates an instance of Astrawiki.
  *
  * By default the node will connect to the Bitxenia wiki, which name is "bitxenia-wiki", except another name is passed by parameter
  *
  * The node is started by default.
  *
- * @function createAstrawikiNode
- * @param {AstrawikiNodeInit} init Options used to create an AstrawikiNode
+ * @function createAstrawiki
+ * @param {AstrawikiInit} init Options used to create an Astrawiki
  * @instance
  */
-export async function createAstrawikiNode(
-  init: AstrawikiNodeInit = {}
-): Promise<AstrawikiNodeP2P> {
+export async function createAstrawiki(
+  init: AstrawikiInit = {}
+): Promise<AstrawikiNode> {
   // Set default values for the parameters if not provided
   const wikiname = init.wikiName ?? "bitxenia-wiki";
   const isCollaborator = init.isCollaborator ?? false;
   const datastore = init.datastore ?? new MemoryDatastore();
   const blockstore = init.blockstore ?? new MemoryBlockstore();
-  const publicIP = init.publicIP ?? "0.0.0.0";
+  const publicIp = init.publicIp ?? "0.0.0.0";
 
-  const node = new AstrawikiNodeP2P();
-  await node.start(wikiname, isCollaborator, datastore, blockstore, publicIP);
+  const node = new AstrawikiNode(wikiname);
+  await node.init(isCollaborator, datastore, blockstore, publicIp);
   return node;
 }
 
 /**
- * The API presented by an AstrawikiNode
+ * The API presented by an Astrawiki
  */
-export interface AstrawikiNode {
+export interface Astrawiki {
   /**
    * Gets an existing article
    */
