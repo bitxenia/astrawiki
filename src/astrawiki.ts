@@ -1,4 +1,4 @@
-import { ArticleInfo } from "./index.js";
+import { ArticleInfo, AstrawikiInit } from "./index.js";
 import { ArticleRepository } from "./articleRepository.js";
 import { Astrawiki } from "./index.js";
 import type { Blockstore } from "interface-blockstore";
@@ -14,23 +14,18 @@ export class AstrawikiNode implements Astrawiki {
     this.wikiName = wikiName;
   }
 
-  public async init(
-    isCollaborator: boolean,
-    datastore: Datastore,
-    blockstore: Blockstore,
-    publicIp: string,
-    offlineMode: boolean
-  ): Promise<void> {
+  public async init(init: AstrawikiInit): Promise<void> {
     this.astraDb = await createAstraDb({
       dbName: this.wikiName,
-      isCollaborator: isCollaborator,
-      datastore: datastore,
-      blockstore: blockstore,
-      publicIp: publicIp,
-      TcpPort: 40001,
-      WSPort: 40002,
-      WSSPort: 40003,
-      offlineMode: offlineMode,
+      isCollaborator: init.isCollaborator,
+      datastore: init.datastore,
+      blockstore: init.blockstore,
+      publicIp: init.publicIp,
+      TcpPort: init.TcpPort,
+      WSPort: init.WSPort,
+      WSSPort: init.WSSPort,
+      dataDir: init.dataDir,
+      offlineMode: init.offlineMode,
     });
 
     this.articleRepository = new ArticleRepository(this.wikiName, this.astraDb);

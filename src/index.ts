@@ -57,6 +57,44 @@ export interface AstrawikiInit {
   publicIp?: string;
 
   /**
+   * The tcp port of the node. If astrawiki is running in a browser, this will be ignored.
+   * @default 40001
+   */
+  TcpPort?: number;
+
+  /**
+   * The websocket port of the node. If astrawiki is running in a browser, this will be ignored.
+   * @default 40002
+   */
+  WSPort?: number;
+
+  /**
+   * The websocket secure port of the node. If astrawiki is running in a browser, this will be ignored.
+   * @default 40003
+   */
+  WSSPort?: number;
+
+  /**
+   * Data directory. This is the directory where all the astrawiki data will be stored,
+   * it is recommended to use the same directory as the datastore and blockstore.
+   *
+   * Different nodes should use different directories.
+   *
+   * @default "./data/astrawiki"
+   *
+   * @example
+   * ```typescript
+   * const datastore = new FsDatastore("./data/node1/datastore");
+   * const blockstore = new FsBlockstore("./data/node1/blockstore");
+   * const astraDb = await createAstrawiki({
+   *  datastore: datastore,
+   *  blockstore: blockstore,
+   *  dataDir: "./data/node1",
+   * });
+   */
+  dataDir?: string;
+
+  /**
    * If true, the node will not connect to the network and will only work locally.
 
    * This is useful for testing purposes.
@@ -81,15 +119,19 @@ export async function createAstrawiki(
   init: AstrawikiInit = {}
 ): Promise<AstrawikiNode> {
   // Set default values for the parameters if not provided
-  const wikiname = init.wikiName ?? "bitxenia-wiki";
-  const isCollaborator = init.isCollaborator ?? false;
-  const datastore = init.datastore ?? new MemoryDatastore();
-  const blockstore = init.blockstore ?? new MemoryBlockstore();
-  const publicIp = init.publicIp ?? "0.0.0.0";
-  const offlineMode = init.offlineMode ?? false;
+  init.wikiName = init.wikiName ?? "bitxenia-wiki";
+  init.isCollaborator = init.isCollaborator ?? false;
+  init.datastore = init.datastore ?? new MemoryDatastore();
+  init.blockstore = init.blockstore ?? new MemoryBlockstore();
+  init.publicIp = init.publicIp ?? "0.0.0.0";
+  init.TcpPort = init.TcpPort ?? 40001;
+  init.WSPort = init.WSPort ?? 40002;
+  init.WSSPort = init.WSSPort ?? 40003;
+  init.dataDir = init.dataDir ?? "./data/astrawiki";
+  init.offlineMode = init.offlineMode ?? false;
 
-  const node = new AstrawikiNode(wikiname);
-  await node.init(isCollaborator, datastore, blockstore, publicIp, offlineMode);
+  const node = new AstrawikiNode(init.wikiName);
+  await node.init(init);
   return node;
 }
 
