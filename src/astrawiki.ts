@@ -18,7 +18,8 @@ export class AstrawikiNode implements Astrawiki {
     isCollaborator: boolean,
     datastore: Datastore,
     blockstore: Blockstore,
-    publicIp: string
+    publicIp: string,
+    offlineMode: boolean
   ): Promise<void> {
     this.astraDb = await createAstraDb({
       dbName: this.wikiName,
@@ -29,6 +30,7 @@ export class AstrawikiNode implements Astrawiki {
       TcpPort: 40001,
       WSPort: 40002,
       WSSPort: 40003,
+      offlineMode: offlineMode,
     });
 
     this.articleRepository = new ArticleRepository(this.wikiName, this.astraDb);
