@@ -95,7 +95,7 @@ export interface AstrawikiInit {
   dataDir?: string;
 
   /**
-   * If true, the node will not connect to the network and will only work locally.
+   * If true, the node will not connect to the astrawiki network and will only work locally.
 
    * This is useful for testing purposes.
    *
