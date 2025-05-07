@@ -55,6 +55,15 @@ export interface AstrawikiInit {
    * The public ip of the node
    */
   publicIp?: string;
+
+  /**
+   * If true, the node will not connect to the network and will only work locally.
+
+   * This is useful for testing purposes.
+   *
+   * @default false
+   */
+  offlineMode?: boolean;
 }
 
 /**
@@ -77,9 +86,10 @@ export async function createAstrawiki(
   const datastore = init.datastore ?? new MemoryDatastore();
   const blockstore = init.blockstore ?? new MemoryBlockstore();
   const publicIp = init.publicIp ?? "0.0.0.0";
+  const offlineMode = init.offlineMode ?? false;
 
   const node = new AstrawikiNode(wikiname);
-  await node.init(isCollaborator, datastore, blockstore, publicIp);
+  await node.init(isCollaborator, datastore, blockstore, publicIp, offlineMode);
   return node;
 }
 
