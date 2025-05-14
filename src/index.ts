@@ -123,7 +123,7 @@ export interface AstrawikiInit {
    *
    * @default []
    */
-  bootstapPeers?: string[];
+  bootstrapPeers?: string[];
 
   /**
    * If true, the node will not connect to the astrawiki network and will only work locally.
@@ -160,7 +160,7 @@ export async function createAstrawiki(
   init.wssPort = init.wssPort ?? 40003;
   init.webRTCDirectPort = init.webRTCDirectPort ?? 40001;
   init.dataDir = init.dataDir ?? "./data/astrawiki";
-  init.bootstapPeers = init.bootstapPeers ?? [];
+  init.bootstrapPeers = init.bootstrapPeers ?? [];
   init.offlineMode = init.offlineMode ?? false;
 
   const node = new AstrawikiNode(init.wikiName);
