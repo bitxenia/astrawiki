@@ -1,8 +1,6 @@
 import { ArticleInfo, AstrawikiInit } from "./index.js";
 import { ArticleRepository } from "./articleRepository.js";
 import { Astrawiki } from "./index.js";
-import type { Blockstore } from "interface-blockstore";
-import type { Datastore } from "interface-datastore";
 import { AstraDb, createAstraDb } from "@bitxenia/astradb";
 
 export class AstrawikiNode implements Astrawiki {
@@ -21,10 +19,12 @@ export class AstrawikiNode implements Astrawiki {
       datastore: init.datastore,
       blockstore: init.blockstore,
       publicIp: init.publicIp,
-      TcpPort: init.TcpPort,
-      WSPort: init.WSPort,
-      WSSPort: init.WSSPort,
+      tcpPort: init.tcpPort,
+      wsPort: init.wsPort,
+      wssPort: init.wssPort,
+      webRTCDirectPort: init.webRTCDirectPort,
       dataDir: init.dataDir,
+      bootstapPeers: init.bootstapPeers,
       offlineMode: init.offlineMode,
     });
 
