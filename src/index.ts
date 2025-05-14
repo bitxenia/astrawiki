@@ -58,21 +58,39 @@ export interface AstrawikiInit {
 
   /**
    * The tcp port of the node. If astrawiki is running in a browser, this will be ignored.
+   *
+   * It is a TCP port.
+   *
    * @default 40001
    */
-  TcpPort?: number;
+  tcpPort?: number;
 
   /**
    * The websocket port of the node. If astrawiki is running in a browser, this will be ignored.
+   *
+   * It is a TCP port.
+   *
    * @default 40002
    */
-  WSPort?: number;
+  wsPort?: number;
 
   /**
    * The websocket secure port of the node. If astrawiki is running in a browser, this will be ignored.
+   *
+   * It is a TCP port.
+   *
    * @default 40003
    */
-  WSSPort?: number;
+  wssPort?: number;
+
+  /**
+   * The WebRTC direct port of the node. If astrawiki is running in a browser, this will be ignored.
+   *
+   * It is a UDP port.
+   *
+   * @default 40001
+   */
+  webRTCDirectPort?: number;
 
   /**
    * Data directory. This is the directory where all the astrawiki data will be stored,
@@ -93,6 +111,19 @@ export interface AstrawikiInit {
    * });
    */
   dataDir?: string;
+
+  /**
+   * List of bootstrap peers to connect to. This is useful if there are known peers using the same astrawiki network
+   * and you want to connect to them directly, instead of waiting for the discovery process.
+   *
+   * The list contains the multiaddresses of the peers.
+   *
+   * For example, if the peer multiaddress is a tcp address, it should be in the format:
+   * `/ip4/<ip>/tcp/<port>/p2p/<peerId>`.
+   *
+   * @default []
+   */
+  bootstapPeers?: string[];
 
   /**
    * If true, the node will not connect to the astrawiki network and will only work locally.
@@ -124,10 +155,12 @@ export async function createAstrawiki(
   init.datastore = init.datastore ?? new MemoryDatastore();
   init.blockstore = init.blockstore ?? new MemoryBlockstore();
   init.publicIp = init.publicIp ?? "0.0.0.0";
-  init.TcpPort = init.TcpPort ?? 40001;
-  init.WSPort = init.WSPort ?? 40002;
-  init.WSSPort = init.WSSPort ?? 40003;
+  init.tcpPort = init.tcpPort ?? 40001;
+  init.wsPort = init.wsPort ?? 40002;
+  init.wssPort = init.wssPort ?? 40003;
+  init.webRTCDirectPort = init.webRTCDirectPort ?? 40001;
   init.dataDir = init.dataDir ?? "./data/astrawiki";
+  init.bootstapPeers = init.bootstapPeers ?? [];
   init.offlineMode = init.offlineMode ?? false;
 
   const node = new AstrawikiNode(init.wikiName);
