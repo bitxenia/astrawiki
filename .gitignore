@@ -14,3 +14,5 @@ data
 orbitdb
 *.log
 config.json
+
+test/metrics

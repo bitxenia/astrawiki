@@ -2,7 +2,7 @@
  * @module Astrawiki
  * @description Provides an interface for users to interact with Astrawiki.
  */
-import { AstrawikiNode } from "./astrawiki.js";
+import { AstrawikiNode } from "./astrawiki";
 import type { Blockstore } from "interface-blockstore";
 import type { Datastore } from "interface-datastore";
 import { MemoryBlockstore } from "blockstore-core";
@@ -147,7 +147,7 @@ export interface AstrawikiInit {
  * @instance
  */
 export async function createAstrawiki(
-  init: AstrawikiInit = {}
+  init: AstrawikiInit = {},
 ): Promise<AstrawikiNode> {
   // Set default values for the parameters if not provided
   init.wikiName = init.wikiName ?? "bitxenia-wiki";
@@ -177,7 +177,7 @@ export interface Astrawiki {
    */
   getArticle(
     articleName: string,
-    articleVersionID?: string
+    articleVersionID?: string,
   ): Promise<ArticleInfo>;
 
   /**

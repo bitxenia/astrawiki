@@ -1,6 +1,6 @@
-import { ArticleInfo, AstrawikiInit } from "./index.js";
-import { ArticleRepository } from "./articleRepository.js";
-import { Astrawiki } from "./index.js";
+import { ArticleInfo, AstrawikiInit } from "./index";
+import { ArticleRepository } from "./articleRepository";
+import { Astrawiki } from "./index";
 import { AstraDb, createAstraDb } from "@bitxenia/astradb";
 
 export class AstrawikiNode implements Astrawiki {
@@ -33,12 +33,12 @@ export class AstrawikiNode implements Astrawiki {
 
   public async getArticle(
     articleName: string,
-    articleVersionID?: string
+    articleVersionID?: string,
   ): Promise<ArticleInfo> {
     console.log(`Fetching article ${articleName}`);
     const article = await this.articleRepository.getArticle(
       articleName,
-      articleVersionID
+      articleVersionID,
     );
     console.log(`Article ${articleName} fetched`);
     return article;
@@ -46,7 +46,7 @@ export class AstrawikiNode implements Astrawiki {
 
   public async newArticle(
     articleName: string,
-    articleContent: string
+    articleContent: string,
   ): Promise<void> {
     console.log(`Creating article ${articleName}`);
     await this.articleRepository.newArticle(articleName, articleContent);
@@ -55,7 +55,7 @@ export class AstrawikiNode implements Astrawiki {
 
   public async editArticle(
     articleName: string,
-    newArticleContent: string
+    newArticleContent: string,
   ): Promise<void> {
     console.log(`Editing article ${articleName}`);
     await this.articleRepository.editArticle(articleName, newArticleContent);

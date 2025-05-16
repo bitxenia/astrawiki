@@ -1,7 +1,7 @@
 import { VersionID } from "@bitxenia/wiki-version-manager";
-import { ArticleInfo } from "./index.js";
+import { ArticleInfo } from "./index";
 import { AstraDb } from "@bitxenia/astradb";
-import { Article } from "./article.js";
+import { Article } from "./article";
 
 export class ArticleRepository {
   wikiName: string;
@@ -16,7 +16,7 @@ export class ArticleRepository {
 
   public async getArticle(
     articleName: string,
-    articleVersionID?: string
+    articleVersionID?: string,
   ): Promise<ArticleInfo> {
     const articleChanges = await this.astraDb.get(articleName);
     const article = new Article(articleName, articleChanges, this.astraDb);
@@ -24,7 +24,7 @@ export class ArticleRepository {
     // Update the last version fetched.
     this.lastVersionFetchedByArticle.set(
       articleName,
-      article.getCurrentVersionID()
+      article.getCurrentVersionID(),
     );
     const articleContent = article.getContent(articleVersionID);
     const articleVersions = article.getVersions();
@@ -42,7 +42,7 @@ export class ArticleRepository {
 
   public async editArticle(
     articleName: string,
-    newArticleContent: string
+    newArticleContent: string,
   ): Promise<void> {
     const articleChanges = await this.astraDb.get(articleName);
     const article = new Article(articleName, articleChanges, this.astraDb);
@@ -52,7 +52,7 @@ export class ArticleRepository {
       this.lastVersionFetchedByArticle.get(articleName);
     if (!lastVersionFetched) {
       throw Error(
-        `Article ${articleName} was not previously fetched. Fetched articles: ${this.lastVersionFetchedByArticle.keys()}`
+        `Article ${articleName} was not previously fetched. Fetched articles: ${this.lastVersionFetchedByArticle.keys()}`,
       );
     }
     await article.newContent(newArticleContent, lastVersionFetched);
