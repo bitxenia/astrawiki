@@ -1,6 +1,6 @@
 {
   "name": "@bitxenia/astrawiki",
-  "version": "0.1.17",
+  "version": "0.1.19",
   "description": "Decentralized p2p wiki on IPFS",
   "author": "Bitxenia",
   "license": "MIT",
@@ -16,7 +16,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "@bitxenia/astradb": "0.1.3",
+    "@bitxenia/astradb": "0.1.4",
     "@bitxenia/wiki-version-manager": "0.1.2",
     "blockstore-core": "5.0.2",
     "datastore-core": "10.0.2"
