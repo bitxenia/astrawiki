@@ -20,8 +20,6 @@ export class AstrawikiNode implements Astrawiki {
       blockstore: init.blockstore,
       publicIp: init.publicIp,
       tcpPort: init.tcpPort,
-      wsPort: init.wsPort,
-      wssPort: init.wssPort,
       webRTCDirectPort: init.webRTCDirectPort,
       dataDir: init.dataDir,
       bootstrapProviderPeers: init.bootstrapProviderPeers,
