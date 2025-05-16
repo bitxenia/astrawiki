@@ -63,4 +63,8 @@ export class AstrawikiNode implements Astrawiki {
   public async getArticleList(): Promise<string[]> {
     return await this.articleRepository.getArticleList();
   }
+
+  public async getNodeMultiaddrs(): Promise<string[]> {
+    return await this.astraDb.getNodeMultiaddrs();
+  }
 }
