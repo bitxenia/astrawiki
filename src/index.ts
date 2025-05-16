@@ -66,24 +66,6 @@ export interface AstrawikiInit {
   tcpPort?: number;
 
   /**
-   * The websocket port of the node. If astrawiki is running in a browser, this will be ignored.
-   *
-   * It is a TCP port.
-   *
-   * @default 40002
-   */
-  wsPort?: number;
-
-  /**
-   * The websocket secure port of the node. If astrawiki is running in a browser, this will be ignored.
-   *
-   * It is a TCP port.
-   *
-   * @default 40003
-   */
-  wssPort?: number;
-
-  /**
    * The WebRTC direct port of the node. If astrawiki is running in a browser, this will be ignored.
    *
    * It is a UDP port.
@@ -113,7 +95,7 @@ export interface AstrawikiInit {
   dataDir?: string;
 
   /**
-   * List of bootstrap peers to connect to. This is useful if there are known peers using the same astrawiki network
+   * List of bootstrap provider peers to connect to. This is useful if there are known peers using the same astrawiki network
    * and you want to connect to them directly, instead of waiting for the discovery process.
    *
    * The list contains the multiaddresses of the peers.
@@ -123,7 +105,7 @@ export interface AstrawikiInit {
    *
    * @default []
    */
-  bootstrapPeers?: string[];
+  bootstrapProviderPeers?: string[];
 
   /**
    * If true, the node will not connect to the astrawiki network and will only work locally.
@@ -156,11 +138,9 @@ export async function createAstrawiki(
   init.blockstore = init.blockstore ?? new MemoryBlockstore();
   init.publicIp = init.publicIp ?? "0.0.0.0";
   init.tcpPort = init.tcpPort ?? 40001;
-  init.wsPort = init.wsPort ?? 40002;
-  init.wssPort = init.wssPort ?? 40003;
   init.webRTCDirectPort = init.webRTCDirectPort ?? 40001;
   init.dataDir = init.dataDir ?? "./data/astrawiki";
-  init.bootstrapPeers = init.bootstrapPeers ?? [];
+  init.bootstrapProviderPeers = init.bootstrapProviderPeers ?? [];
   init.offlineMode = init.offlineMode ?? false;
 
   const node = new AstrawikiNode(init.wikiName);
