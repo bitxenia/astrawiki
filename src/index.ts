@@ -66,24 +66,6 @@ export interface AstrawikiInit {
   tcpPort?: number;
 
   /**
-   * The websocket port of the node. If astrawiki is running in a browser, this will be ignored.
-   *
-   * It is a TCP port.
-   *
-   * @default 40002
-   */
-  wsPort?: number;
-
-  /**
-   * The websocket secure port of the node. If astrawiki is running in a browser, this will be ignored.
-   *
-   * It is a TCP port.
-   *
-   * @default 40003
-   */
-  wssPort?: number;
-
-  /**
    * The WebRTC direct port of the node. If astrawiki is running in a browser, this will be ignored.
    *
    * It is a UDP port.
@@ -156,8 +138,6 @@ export async function createAstrawiki(
   init.blockstore = init.blockstore ?? new MemoryBlockstore();
   init.publicIp = init.publicIp ?? "0.0.0.0";
   init.tcpPort = init.tcpPort ?? 40001;
-  init.wsPort = init.wsPort ?? 40002;
-  init.wssPort = init.wssPort ?? 40003;
   init.webRTCDirectPort = init.webRTCDirectPort ?? 40001;
   init.dataDir = init.dataDir ?? "./data/astrawiki";
   init.bootstrapProviderPeers = init.bootstrapProviderPeers ?? [];
