@@ -24,7 +24,7 @@ export class AstrawikiNode implements Astrawiki {
       wssPort: init.wssPort,
       webRTCDirectPort: init.webRTCDirectPort,
       dataDir: init.dataDir,
-      bootstrapPeers: init.bootstrapPeers,
+      bootstrapProviderPeers: init.bootstrapProviderPeers,
       offlineMode: init.offlineMode,
     });
 
