@@ -113,7 +113,7 @@ export interface AstrawikiInit {
   dataDir?: string;
 
   /**
-   * List of bootstrap peers to connect to. This is useful if there are known peers using the same astrawiki network
+   * List of bootstrap provider peers to connect to. This is useful if there are known peers using the same astrawiki network
    * and you want to connect to them directly, instead of waiting for the discovery process.
    *
    * The list contains the multiaddresses of the peers.
@@ -123,7 +123,7 @@ export interface AstrawikiInit {
    *
    * @default []
    */
-  bootstrapPeers?: string[];
+  bootstrapProviderPeers?: string[];
 
   /**
    * If true, the node will not connect to the astrawiki network and will only work locally.
@@ -160,7 +160,7 @@ export async function createAstrawiki(
   init.wssPort = init.wssPort ?? 40003;
   init.webRTCDirectPort = init.webRTCDirectPort ?? 40001;
   init.dataDir = init.dataDir ?? "./data/astrawiki";
-  init.bootstrapPeers = init.bootstrapPeers ?? [];
+  init.bootstrapProviderPeers = init.bootstrapProviderPeers ?? [];
   init.offlineMode = init.offlineMode ?? false;
 
   const node = new AstrawikiNode(init.wikiName);
