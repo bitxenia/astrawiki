@@ -174,6 +174,13 @@ export interface Astrawiki {
    * Gets the list of articles in the wiki
    */
   getArticleList(): Promise<string[]>;
+
+  /**
+   * Retrieves the public multiaddresses of the astrawiki node.
+   *
+   * This multiaddresses can be used as bootstrapProviderPeers from other nodes.
+   */
+  getNodeMultiaddrs: () => Promise<string[]>;
 }
 
 export type ArticleInfo = {
