@@ -12,7 +12,7 @@ const LOREM_IPSUM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ";
  * @param filename - the name of the file to save the metrics to
  */
 export const saveMetrics = <T>(results: T[], filename: string) => {
-  const metricsDir = `${__dirname}/../metrics`;
+  const metricsDir = `${__dirname}/../results`;
   if (!fs.existsSync(metricsDir)) {
     fs.mkdirSync(metricsDir);
   }
@@ -37,3 +37,7 @@ export const generateLoremIpsum = (bytes: number): string => {
     5000,
   );
 };
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
