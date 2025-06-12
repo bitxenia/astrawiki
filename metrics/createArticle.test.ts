@@ -10,8 +10,8 @@ describe("createArticle", () => {
   );
 
   test(
-    "createArticleShort",
-    async () => await createArticleMetric("large"),
+    "createArticle",
+    async () => await createArticleMetric(),
     FIVE_HOUR_TIMEOUT,
   );
 });

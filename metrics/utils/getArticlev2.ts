@@ -3,13 +3,13 @@ import { getContent, Length } from "./content";
 import { saveMetrics, sleep } from "./metrics";
 import { getNode, waitForArticleListToBeSynced } from "./node";
 
-const NUMBER_OF_ARTICLES = 30;
+const NUMBER_OF_ARTICLES = 50;
 
 export async function getArticleMetric(length: Length) {
   const collaborator = await getNode("collaborator", 40001, true);
   const collaboratorAddresses = await collaborator.getNodeMultiaddrs();
 
-  //NOTE: try one multiaddr at a time
+  const user1 = await getNode("user1", 40002, false, collaboratorAddresses);
   const user1 = await getNode("user1", 40002, false, collaboratorAddresses);
 
   const content = getContent(length);

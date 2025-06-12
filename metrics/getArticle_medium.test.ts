@@ -1,17 +1,17 @@
 import { rm } from "fs/promises";
-import { createArticleMetric } from "./utils/createArticle";
+import { getArticleMetric } from "./utils/getArticle";
 
 const FIVE_HOUR_TIMEOUT = 1000 * 60 * 60 * 5;
 
-describe("createArticle", () => {
+describe("getArticle", () => {
   beforeAll(
     async () => await rm("./data", { recursive: true, force: true }),
     FIVE_HOUR_TIMEOUT,
   );
 
   test(
-    "createArticleShort",
-    async () => await createArticleMetric("short"),
+    "getArticleShort",
+    async () => await getArticleMetric("medium"),
     FIVE_HOUR_TIMEOUT,
   );
 });

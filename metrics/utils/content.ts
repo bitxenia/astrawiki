@@ -11,3 +11,7 @@ export function getContent(length: Length): string {
     return generateLoremIpsum(50000);
   }
 }
+
+export function getContentBytes(bytes: number): string {
+  return generateLoremIpsum(bytes);
+}
