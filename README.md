@@ -2,6 +2,8 @@
 
 The Bitxenia Astrawiki node is an implementation of a client for a decentralized peer-to-peer read-write wiki within the [IPFS](https://ipfs.tech) ecosystem. It leverages technologies such as [OrbitDB](https://github.com/orbitdb/orbitdb) for the database and [LibP2P](https://github.com/libp2p/js-libp2p) for peer-to-peer communication between collaborators. With this node, users can connect to an existing wiki or create their own, allowing to create, read, and edit articles in a collaborative manner.
 
+Astrawiki is powered by [AstraDB](https://github.com/bitxenia/astradb), a distributed event-based database that manages shared state and synchronization between nodes. Built over IPFS and OrbitDB, AstraDB ensures that all articles and edits remain available, verifiable, and collaboratively maintained by the community.
+
 The implementation focuses on providing a decentralized, distributed, and collaborative alternative to existing wikis. For this reason, only the collaborative nodes are responsible for the availability and persistence of the wiki.
 
 To achieve true decentralization, all nodes that make up the wiki share the same responsibilities, making it easy to create or maintain a wiki separate from the one provided by Bitxenia. Additionally, no wiki depends on its original creators.
@@ -9,6 +11,7 @@ To achieve true decentralization, all nodes that make up the wiki share the same
 By using OrbitDB as a database, any user can create and edit articles in real-time.
 
 A _frontend_ client can be built using the node to make the wiki more accessible. The node can be used locally or from a web application. At Bitxenia, we provide our own [web client](https://github.com/bitxenia/astrawiki-web), but users are free to create their own if desired.
+
 
 ## Install
 
