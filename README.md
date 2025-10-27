@@ -35,7 +35,7 @@ Use the [Getting Started](https://github.com/bitxenia/astrawiki/tree/main/docs/g
 
 ## Documentation
 
-You can find more advanced topics in our [docs](https://github.com/bitxenia/astrawiki/tree/main/docs).
+You can find more advanced topics in our [docs](https://github.com/bitxenia/docs).
 
 ## Development
 
